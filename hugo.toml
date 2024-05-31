@@ -16,7 +16,7 @@ home = ["HTML", "RSS", "Algolia"]
   header_image = "img/home-bg-jeep.jpg"
   SEOTitle = "王富杰的博客 | WangFuJie Blog"
   description = "王富杰，程序员, DBA, 开源爱好者，生活探险家 | 这里是 王富杰 的博客，与你一起发现更大的世界。"
-  keyword = "王富杰, wangfujie, Wangfujie, , 王富杰的网络日志, 王富杰的博客, Wangfujie Blog, 博客, 个人网站, 互联网, Python, MySQL"
+  keyword = "王富杰, wangfujie, Wangfujie, , 王富杰的网络日志, 王富杰的博客, Wangfujie Blog, 博客, 个人网站, 互联网, DBA, Python, MySQL"
   slogan = "路在脚下，心向远方"
   upstreamAttribution = true
 
@@ -36,7 +36,7 @@ home = ["HTML", "RSS", "Algolia"]
   algolia_apiKey = ""
 
   # Sidebar settings
-  sidebar_about_description = "DBA, OP, Software Developer, Open Source Enthusiast and Life Adventurer"
+  sidebar_about_description = "DBA, OP, Software Developer, Open Source Enthusiast"
   #sidebar_avatar = "img/avatar-zhaohuabing.jpg"      # use absolute URL, seeing it's used in both `/` and `/about/`
   sidebar_avatar = "img/wangfujie.png"      # use absolute URL, seeing it's used in both `/` and `/about/`
 
@@ -73,12 +73,12 @@ home = ["HTML", "RSS", "Algolia"]
   email          = "wfjaizwj@gmail.com"
   #facebook      = "full profile url in facebook"
   #googleplus    = "full profile url in googleplus"
-  #twitter       = "full profile url in twitter"
-  linkedin       = "https://www.linkedin.com/in/yourlinkedinid"
-  stackoverflow  = "https://stackoverflow.com/users/yourstackoverflowid"
+  #twitter       = "https://x.com/home"
+  #linkedin       = "https://www.linkedin.com/in/yourlinkedinid"
+  stackoverflow  = "https://stackoverflow.com/users/25345798/fujie-wang"
   #instagram     = "full profile url in instagram"
-  github         = "https://github.com/yourgithub"
-  wechat         = "your wechat qr code image"
+  github         = "https://github.com/wang-fu-jie"
+  wechat         = "img/wechat_qrcode.jpg"
   #medium        = "full profile url in medium"
   #slack         = "full workspace url in slack"
   #pinterest     = "full profile url in pinterest"
