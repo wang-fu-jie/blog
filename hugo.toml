@@ -1,4 +1,4 @@
-baseURL = "http://localhost:1313/"
+baseURL = "https://blog-zeta-plum.vercel.app/"
 title = "WangFuJie Blog"
 theme = "hugo-theme-cleanwhite"
 languageCode = "zh-cn"
