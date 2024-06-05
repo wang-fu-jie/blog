@@ -54,7 +54,7 @@ home = ["HTML", "RSS", "Algolia"]
 
   # Twikoo comments
   # Follow https://twikoo.js.org/ to set up your own env_id
-  twikoo_env_id = "http://comment.wangfujie.site/"
+  twikoo_env_id = "https://comment.wangfujie.site/"
 
   #Enable wechat pay & alipay to allow readers send reward money if they like the articles 
   reward = true 
