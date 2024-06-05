@@ -1,4 +1,4 @@
-baseURL = "https://blog-zeta-plum.vercel.app/"
+baseURL = "https://www.wangfujie.site/"
 title = "WangFuJie Blog"
 theme = "hugo-theme-cleanwhite"
 languageCode = "zh-cn"
@@ -109,10 +109,7 @@ home = ["HTML", "RSS", "Algolia"]
   [[params.addtional_menus]]
   title =  "归档"
   href =  "/archive/"
-
-  #[[params.addtional_menus]]
-  #title =  "关于"
-  #href =  "/about/"
+  
 
 [outputFormats.Algolia]
 baseName = "algolia"
