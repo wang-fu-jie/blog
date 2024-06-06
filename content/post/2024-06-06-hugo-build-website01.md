@@ -66,9 +66,9 @@ cp themes/hugo-theme-cleanwhite/exampleSite/config.toml hugo.toml
 ```
 修改基础配置，其他更多配置功能请根据实际需要进行调整
 ```
-baseurl: https://www.wangfujie.site/
-languageCode: zh-cn
-title: 王富杰的博客
+baseurl = "https://www.wangfujie.site/"
+languageCode = "zh-cn"
+title = "王富杰的博客"
 ```
 
 #### 2.4、创建第一个博客
