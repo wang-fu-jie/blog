@@ -16,9 +16,10 @@
                     <div class="post-heading">
                         <div class="tags">
                             {{ range .Params.tags }}
-                            <a class="tag" href="{{ " /tags/" | relLangURL }}{{ . | urlize }}" title="{{ . }}">
+                            <a class="tag" href="{{ "/tags/" | relLangURL }}{{ . | urlize }}" title="{{ . }}">
                                 {{ . }}
                             </a>
+
                             {{ end }}
                         </div>
                         <h1>{{ .Title }}</h1>
@@ -90,15 +91,13 @@
                         {{ if .PrevInSection }}
                         <li class="previous">
                             <a href="{{ .PrevInSection.RelPermalink }}" data-toggle="tooltip" data-placement="top"
-                                title="{{ .PrevInSection.Title}}">&larr;
-                                上一篇</a>
+                                title="{{ .PrevInSection.Title}}">&larr;上一篇</a>
                         </li>
                         {{ end }}
                         {{ if .NextInSection }}
                         <li class="next">
                             <a href="{{ .NextInSection.RelPermalink }}" data-toggle="tooltip" data-placement="top"
-                                title="{{ .NextInSection.Title}}">下一篇
-                                &rarr;</a>
+                                title="{{ .NextInSection.Title}}">下一篇&rarr;</a>
                         </li>
                         {{ end }}
                     </ul>
@@ -139,7 +138,7 @@
                             {{ $featured_condition_size := .Site.Params.featured_condition_size }}
                             {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
                             {{ if gt (len $taxonomy.Pages) $featured_condition_size }}
-                            <a href="{{ " /tags/" | relLangURL }}{{ $name | urlize }}" title="{{ $name }}">
+                            <a href="{{ "/tags/" | relLangURL }}{{ $name | urlize }}" title="{{ $name }}">
                                 {{ $name }}
                             </a>
                             {{ end }}
