@@ -13,7 +13,7 @@ hasCJKLanguage = true
 home = ["HTML", "RSS", "Algolia"]
 
 [params]
-  header_image = "img/home-bg.jpg"
+  header_image = "img/home-bg-jeep.jpg"
   SEOTitle = "王富杰的博客 | WangFuJie Blog"
   description = "王富杰，程序员, DBA, 开源爱好者，生活探险家 | 这里是 王富杰 的博客，与你一起发现更大的世界。"
   keyword = "王富杰, wangfujie, Wangfujie, , 王富杰的网络日志, 王富杰的博客, Wangfujie Blog, 博客, 个人网站, 互联网, DBA, Python, MySQL"
