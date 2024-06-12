@@ -8,7 +8,7 @@ author:      "王富杰"
 image:       "https://c.pxhere.com/photos/58/e8/snow_night_moon_cold_winter_trees_landscape_nature-1083144.jpg!d"
 published:   true
 tags: 
-    - hogo
+    - hugo
     - 网站建设
 slug:        "hugo-build-website01"
 categories:  [ "网站建设" ]
