@@ -31,7 +31,7 @@ home = ["HTML", "RSS", "Algolia"]
 
   # algolia site search
   algolia_search = true
-  algolia_appId = "wangfujie_blog"
+  algolia_appId = "Z50MGWBPZX"
   algolia_indexName = "wangfujie_blog"
   algolia_apiKey = "3df8455fd3504e5295835ff1e1cbc0b2"
 
