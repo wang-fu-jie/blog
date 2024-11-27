@@ -54,7 +54,8 @@ home = ["HTML", "RSS", "Algolia"]
 
   # Twikoo comments
   # Follow https://twikoo.js.org/ to set up your own env_id
-  twikoo_env_id = "https://comment.wangfujie.site/"
+  # 这个评论依赖monogo数据库且免费只有500M,这里暂时废弃
+  # twikoo_env_id = "https://comment.wangfujie.site/"
 
   #Enable wechat pay & alipay to allow readers send reward money if they like the articles 
   reward = true 
@@ -120,6 +121,21 @@ notAlternative = true
 [params.algolia]
 vars = ["title", "summary", "date", "publishdate", "expirydate", "permalink"]
 params = ["categories", "tags"] 
+
+
+[params.giscus]
+  data-repo="wang-fu-jie/blog"
+  data-repo-id="R_kgDOMC8zKA"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOMC8zKM4Cko6y"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="preferred_color_scheme"
+  data-lang="zh-CN"
+  crossorigin="anonymous"
 
 [markup]
   [markup.tableOfContents]
