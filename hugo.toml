@@ -122,7 +122,6 @@ notAlternative = true
 vars = ["title", "summary", "date", "publishdate", "expirydate", "permalink"]
 params = ["categories", "tags"] 
 
-
 [params.giscus]
   data-repo="wang-fu-jie/blog"
   data-repo-id="R_kgDOMC8zKA"
@@ -132,10 +131,10 @@ params = ["categories", "tags"]
   data-strict="0"
   data-reactions-enabled="1"
   data-emit-metadata="0"
-  data-input-position="bottom"
   data-theme="preferred_color_scheme"
   data-lang="zh-CN"
   crossorigin="anonymous"
+
 
 [markup]
   [markup.tableOfContents]
