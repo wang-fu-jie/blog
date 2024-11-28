@@ -119,8 +119,8 @@ mediaType = "application/json"
 notAlternative = true
 
 [params.algolia]
-vars = ["title", "summary", "date", "publishdate", "expirydate", "permalink"]
-params = ["categories", "tags"] 
+vars = ["title", "subtitle","summary", "date", "publishdate", "expirydate", "permalink"]
+params = ["categories", "tags"]
 
 [params.giscus]
   data_repo="wang-fu-jie/blog"
