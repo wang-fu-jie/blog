@@ -1,6 +1,6 @@
 ---
 title:       从零开始搭建个人博客网站(二)
-subtitle:    "将个人博客网站托管到Github Pages上"
+subtitle:    "将hugo站点托管到Github Pages上"
 description: "GitHub Pages 提供了一项静态网页托管服务，因此可以直接将个人博客网站托管到Github Pages，它可以为个人网站提供免费二级域名供访问。它可以从 GitHub 上的仓库获取 HTML、CSS 和 JavaScript 文件，通过构建过程运行文件，然后发布网站"
 excerpt:     "GitHub Pages 提供了一项静态网页托管服务，因此可以直接将个人博客网站托管到Github Pages，它可以为个人网站提供免费二级域名供访问。它可以从 GitHub 上的仓库获取 HTML、CSS 和 JavaScript 文件，通过构建过程运行文件，然后发布网站"
 date:        2024-06-12T10:11:26+08:00

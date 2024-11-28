@@ -6,7 +6,7 @@ languageCode = "zh-cn"
 disqusShortname = ""
 googleAnalytics = "G-W7C8VSVJJJ"
 preserveTaxonomyNames = true
-paginate = 5 #frontpage pagination
+paginate = 5 #frontpage pagination  # 首页每页显示的文章数
 hasCJKLanguage = true
 
 [outputs]
