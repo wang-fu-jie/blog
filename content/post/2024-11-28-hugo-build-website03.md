@@ -1,5 +1,5 @@
 ---
-title:       搭建个人博客网站之三、hugo站点自动部署到vercel托管平台
+title:       搭建个人博客网站之三、hugo站点部署到vercel托管平台
 subtitle:    "hugo站点自动部署到vercel托管平台"
 description: "Vercel是一个免费的网站托管平台，既可以托管静态网站也可以托管动态网站。Vercel可以关联GitHub，代码提交即可自动部署。并且提供免费域名和证书、无需担心证书到期问题。所以我们可以使用Vercel充当免费的服务器来托管我们通过hugo搭建的个人网站"
 excerpt:     "Vercel是一个免费的网站托管平台，既可以托管静态网站也可以托管动态网站。Vercel可以关联GitHub，代码提交即可自动部署。并且提供免费域名和证书、无需担心证书到期问题。所以我们可以使用Vercel充当免费的服务器来托管我们通过hugo搭建的个人网站"
@@ -11,7 +11,7 @@ tags:
     - hugo
     - 网站建设
 slug:        "hugo-build-website03"
-categories:  [ "网站建设" ]
+categories:  ["网站建设"]
 ---
 
 ## 一、为什么使用 Vercel
