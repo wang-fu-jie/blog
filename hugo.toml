@@ -1,4 +1,4 @@
-baseURL = "https://www.wangfujie.site/"
+baseURL = "https://www.wangfujie.cn/"
 title = "WangFuJie Blog"
 theme = "hugo-theme-cleanwhite"
 languageCode = "zh-cn"
