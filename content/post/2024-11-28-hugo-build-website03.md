@@ -11,7 +11,7 @@ tags:
     - hugo
     - 网站建设
 slug:        "hugo-build-website03"
-categories:  ["网站建设"]
+categories:  [ "网站建设" ]
 ---
 
 ## 一、为什么使用 Vercel
