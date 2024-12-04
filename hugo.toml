@@ -52,6 +52,8 @@ home = ["HTML", "RSS", "Algolia"]
   disqus_proxy = ""
   disqus_site = ""
 
+  googleAd = "ca-pub-1917810674639660"      # Google Ad
+
   # Twikoo comments
   # Follow https://twikoo.js.org/ to set up your own env_id
   # 这个评论依赖monogo数据库且免费只有500M,这里暂时废弃
