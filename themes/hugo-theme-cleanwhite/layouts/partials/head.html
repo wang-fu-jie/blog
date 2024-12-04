@@ -45,13 +45,6 @@
     {{ end }}
     <!-- end ogp -->
 
-    <!--google adsense-->>
-    {{ if .Site.Params.googleAd }}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ .Site.Params.googleAd }}"
-        crossorigin="anonymous"></script>
-    {{ end }}
-    <!--google adsense-->>
-
     <meta name="keyword"  content="{{ .Site.Params.keyword }}">
     <link rel="shortcut icon" href="{{ "img/favicon.ico" | relURL }}">
 
@@ -61,6 +54,11 @@
 
     {{ if .Site.Params.disqus_proxy }}
     <link rel="stylesheet" href="{{ "css/iDisqus.min.css" | relURL }}"/>
+    {{ end }}
+
+    {{ if .Site.Params.googleAd }}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ .Site.Params.googleAd }}"
+        crossorigin="anonymous"></script>
     {{ end }}
     
     <!-- Bootstrap Core CSS -->
