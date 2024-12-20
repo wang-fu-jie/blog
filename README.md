@@ -20,5 +20,4 @@ npm run algolia
 # 博客提交
 git add . && git commit -m 'DBA' && git push
 
-# 手动给百度推资源
-curl -H 'Content-Type:text/plain' --data-binary @urls.txt "http://data.zz.baidu.com/urls?site=https://www.wangfujie.cn&token=WDBX2AQwRbHeFVsj"
+# 手动给百度和搜狗推资源
