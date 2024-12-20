@@ -3,6 +3,8 @@
 # 创建新博客
 hugo new post/2024-11-18-my-first-blog.md
 
+mkdir -p static/post_images/2024-11-18-my-first-blog
+
 # 背景图库
 https://pxhere.com/
 
