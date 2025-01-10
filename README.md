@@ -1,7 +1,7 @@
 # blog
 
 # 创建新博客
-hugo new post/2024-11-18-my-first-blog.md
+hugo new post/2025-01-18-my-first-blog.md
 
 mkdir -p static/post_images/2024-11-18-my-first-blog
 
