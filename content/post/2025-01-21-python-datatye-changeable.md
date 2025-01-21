@@ -5,7 +5,7 @@ description: "可变类型指的是数据类转中值发生了改变的情况下
 excerpt:     "可变类型指的是数据类转中值发生了改变的情况下，id不变说明改变的原值。不可变类型是值改变的情况下，id也发生了变化，即申请了一片内存空间保存新的值，原值并没有改变。"
 date:        2025-01-21T11:22:18+08:00
 author:      "王富杰"
-image:       "/img/home-bg-jeep.jpg"
+image:       "https://c.pxhere.com/photos/3e/3c/poinsettia_advent_christmas_star_christmas_decor_christmas_eve_decoration_lamp-936850.jpg!d"
 published:   true
 tags:
     - Python
