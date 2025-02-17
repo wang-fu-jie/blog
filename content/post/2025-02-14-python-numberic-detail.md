@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - Python数字类型与进制转换
 subtitle:    "Python数字类型与进制转换"
-description: ""
-excerpt:     ""
+description: "数学运算中我们习惯使用十进制，但是计算机只能识别二进制，二进制可读性较差，因此计算机表示中还经常用到八进制和十六进制。本文中重点介绍各种进制之间是如何进行转换的以及定义数字型的底层是如何实现的。"
+excerpt:     "数学运算中我们习惯使用十进制，但是计算机只能识别二进制，二进制可读性较差，因此计算机表示中还经常用到八进制和十六进制。本文中重点介绍各种进制之间是如何进行转换的以及定义数字型的底层是如何实现的。"
 date:        2025-02-14T14:31:01+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/00/33/moon_universe_space_milky_way_background_galaxy_planet_all-1188425.jpg!d"
