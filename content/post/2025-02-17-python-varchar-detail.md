@@ -8,8 +8,8 @@ author:      "王富杰"
 image:       "https://c.pxhere.com/photos/21/a2/beach_wafe_ocean_water_wave-127492.jpg!d"
 published:   true
 tags:
-    - tag1
-    - tag2
+    - Python
+    - Python基础
 slug:        "python-varchar-detail"
 categories:  [ "PYTHON" ]
 ---
@@ -41,7 +41,7 @@ TypeError: 'str' object does not support item assignment
 从示例我们可以看出，字符串支持通过索引取值，支持正向索引和反向索引。但是不支持通过索引修改，因此字符串是不可变类型。
 
 ### 2.2、切片
-切片是索引的拓展应该，索引是取字符串的某一个字符，切片是根据索引取字符串中的某一段字符。即可以理解为切片是将原字符串中通过索引指定一个子串复制出来。原字符串并不发生改变。
+切片是索引的拓展应用，索引是取字符串的某一个字符，切片是根据索引取字符串中的某一段字符。即可以理解为切片是将原字符串中通过索引指定一个子串复制出来。原字符串并不发生改变。
 ```python
 # 语法格式
 >>> print(info[::-1])
