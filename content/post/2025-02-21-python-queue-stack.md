@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - Python队列与堆栈
 subtitle:    "Python队列与堆栈"
-description: "队列和堆栈是两种很常见的数据结构，队列的特点是先进先出，即FIFO。堆栈的特点是后进先去，即LIFO。这里我们使用python的列表来实现以下这两张数据结构。"
-excerpt:     "队列和堆栈是两种很常见的数据结构，队列的特点是先进先出，即FIFO。堆栈的特点是后进先去，即LIFO。这里我们使用python的列表来实现以下这两张数据结构。"
+description: "队列和堆栈是两种很常见的数据结构，队列的特点是先进先出，即FIFO。堆栈的特点是后进先去，即LIFO。这里我们使用python的列表来实现以下这两种数据结构。"
+excerpt:     "队列和堆栈是两种很常见的数据结构，队列的特点是先进先出，即FIFO。堆栈的特点是后进先去，即LIFO。这里我们使用python的列表来实现以下这两种数据结构。"
 date:        2025-02-21T13:58:59+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/16/b6/landscape_hiking_fall_autumn_mountain-19622.jpg!d"
