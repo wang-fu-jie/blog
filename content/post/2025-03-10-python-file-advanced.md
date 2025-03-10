@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 操作文件(二)
 subtitle:    "操作文件(二)"
-description: ""
-excerpt:     ""
+description: "对于操作文件Python还提共了许多接口，例如按行读取、指定读取字节数。提供了移动文件指针来指定读写内容。操作二进制内置了bytes类型等等。本文将介绍这些操作以及如何对文件进行修改。"
+excerpt:     "对于操作文件Python还提共了许多接口，例如按行读取、指定读取字节数。提供了移动文件指针来指定读写内容。操作二进制内置了bytes类型等等。本文将介绍这些操作以及如何对文件进行修改。"
 date:        2025-03-10T09:52:58+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/cd/3c/forest_landscape_autumn_trees_germany_nature_mood_leaves-1370886.jpg!d"
