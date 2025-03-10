@@ -1,8 +1,8 @@
 ---
-title:       Python基础 - Python操作文件
-subtitle:    "Python操作文件"
-description: ""
-excerpt:     ""
+title:       Python基础 - 操作文件(一)
+subtitle:    "操作文件(一)"
+description: "文件是计算机存储数据的基本单位，日常工作中，我们需要通过文件操作硬盘。Python也提供了一系列操作文件的接口，通过这些接口可以读写文本文件或二进制文件。并且提供了上下文管理器防止用户忘记关闭资源。"
+excerpt:     "文件是计算机存储数据的基本单位，日常工作中，我们需要通过文件操作硬盘。Python也提供了一系列操作文件的接口，通过这些接口可以读写文本文件或二进制文件。并且提供了上下文管理器防止用户忘记关闭资源。"
 date:        2025-03-07T09:50:50+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/c8/88/sunset_woman_beach_beach_sunset_woman_on_beach_sunset_beach_women-1054644.jpg!d"
