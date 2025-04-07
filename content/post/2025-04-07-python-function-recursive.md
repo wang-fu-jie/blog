@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 函数递归
 subtitle:    "函数递归"
-description: ""
-excerpt:     ""
+description: "递归是指函数在执行过程中直接或间接调用自身的行为。递归函数通常包含两个关键部分：基准条件（Base Case）：递归终止的条件，递归条件（Recursive Case）：函数调用自身的条件。本文我们将介绍递归并使用递归实现一个全排列算法。"
+excerpt:     "递归是指函数在执行过程中直接或间接调用自身的行为。递归函数通常包含两个关键部分：基准条件（Base Case）：递归终止的条件，递归条件（Recursive Case）：函数调用自身的条件。本文我们将介绍递归并使用递归实现一个全排列算法。"
 date:        2025-04-07T09:50:21+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/c6/db/lions_animal_male_female_lions_ready_to_pounce_carnivore_feline_lioness-1120474.jpg!d"
@@ -64,3 +64,17 @@ def my_sum(i):
 ## 三、全排列算法
 现在需求对一个字符串 abcd 进行全排列，就可以使用到递归了。全排列如图所示：
 ![图片加载失败](/post_images/{{< filename >}}/3-01.png)
+如图所示：我们首先取第一个字符进行排列，然后剩余3个字符，接下来再将剩余的3个字符中的第一个字符进行排列，以此类推。接下来我们实现一下：
+```python
+s = 'abcd'
+l = list(s)
+def permutation(l, level):
+    if level == len(l):
+        print(l)
+    for i in range(level, len(l)):
+        l[level], l[i] = l[i], l[level]
+        permutation(l, level + 1)
+        l[level], l[i] = l[i], l[level]
+
+permutation(l, 0)
+```
