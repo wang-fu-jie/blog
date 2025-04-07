@@ -8,8 +8,8 @@ author:      "王富杰"
 image:       "https://c.pxhere.com/photos/89/b5/portrait_flash_got_you_girl_woman_person_female_young-816939.jpg!d"
 published:   true
 tags:
-    - tag1
-    - tag2
+    - Python
+    - Python基础
 slug:        "python-decorator-02"
 categories:  [ "PYTHON" ]
 ---
