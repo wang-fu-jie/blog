@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 模块介绍
 subtitle:    "模块介绍"
-description: ""
-excerpt:     ""
+description: "模块就是一系列功能的集合体,分内置模块，第三方模块和自定义模块三类，通过import或from关键字进行模块导入。在导入时通过sys.path属性进行模块的查找。可以通过模块对一类功能进行封装。"
+excerpt:     "模块就是一系列功能的集合体,分内置模块，第三方模块和自定义模块三类，通过import或from关键字进行模块导入。在导入时通过sys.path属性进行模块的查找。可以通过模块对一类功能进行封装。"
 date:        2025-04-16T13:41:17+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/7a/24/forest_sky_winter_landscape_r_gen_trees-766978.jpg!d"
