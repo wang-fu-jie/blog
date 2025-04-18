@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 包的介绍
 subtitle:    "包的介绍"
-description: ""
-excerpt:     ""
+description: "包是组织代码的另一张方式，包实质是一个文件夹，包含__init__.py文件。包可以包含子包、模块。包提升了代码的可维护性，在使用包是同样使用import进行导入，包导入支持相对导入和绝对导入两种方式。"
+excerpt:     "包是组织代码的另一张方式，包实质是一个文件夹，包含__init__.py文件。包可以包含子包、模块。包提升了代码的可维护性，在使用包是同样使用import进行导入，包导入支持相对导入和绝对导入两种方式。"
 date:        2025-04-18T10:22:11+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/81/62/field_girl_woman_walking_grass-21058.jpg!d"
