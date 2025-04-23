@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 时间模块
 subtitle:    "时间模块"
-description: ""
-excerpt:     ""
+description: "Python提供了两个时间模块，分别是time模块和datetime模块。可用于对时间进行操作，时间有三种格式，分别为时间戳、格式化时间、结构化时间，可以通过时间模块对时间格式进行转换等。"
+excerpt:     "Python提供了两个时间模块，分别是time模块和datetime模块。可用于对时间进行操作，时间有三种格式，分别为时间戳、格式化时间、结构化时间，可以通过时间模块对时间格式进行转换等。"
 date:        2025-04-23T10:53:05+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/6d/22/man_soledad_only_landscape_summer_people_silhouettes_sun-830610.jpg!d"
