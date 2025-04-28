@@ -1,8 +1,8 @@
 ---
 title:        Python基础 - 常用的内置模块
-subtitle:    "常用的内置模块之random、os、sys、shutil模块"
-description: "python自己内置了许多模块，本文介绍几个比较常用的内置模块。其中random模块用来生产随机数，os模块用来和操作系统交互，sys模块用来和python解释器交互，shutil模块是对文件的高级操作适合批量任务。"
-excerpt:     "python自己内置了许多模块，本文介绍几个比较常用的内置模块。其中random模块用来生产随机数，os模块用来和操作系统交互，sys模块用来和python解释器交互，shutil模块是对文件的高级操作适合批量任务。"
+subtitle:    "常用的内置模块之random、os、sys、shutil模块等"
+description: "python自己内置了许多模块，本文介绍几个比较常用的内置模块。其中random模块用来生产随机数，os模块用来和操作系统交互，sys模块用来和python解释器交互，shutil模块是对文件的高级操作适合批量任务。还有其他的如configparse、subprocess、hash模块等。"
+excerpt:     "python自己内置了许多模块，本文介绍几个比较常用的内置模块。其中random模块用来生产随机数，os模块用来和操作系统交互，sys模块用来和python解释器交互，shutil模块是对文件的高级操作适合批量任务。还有其他的如configparse、subprocess、hashlib模块等。"
 date:        2025-04-25T13:59:16+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/c6/df/fox_wild_nature_water_mirror_nature_photography_wildlife-564985.jpg!d"
@@ -118,3 +118,88 @@ shutil.make_archive("path", 'zip', root_dir='data')
 ```
 此外还有用于压缩的模块zipfile和tarfile，此处不再逐个介绍，使用时再查资料即可。
 
+## 五、configparser模块
+configparser模块用来解析ini格式的配置文件，例如mysql的配置文件就是ini格式。例：
+```ini
+# 注释
+; 也是注释
+
+[default]
+delay = 10
+salary = 3.5
+compression = true
+compression_level = 9
+language_code = en-us
+time_zone = UTC
+
+[db]
+db_type = mysql
+database_name = catalogue_data
+user = root
+password = root
+host = 127.0.0.1
+port = 3306
+charset = utf8
+```
+如上这个配置文件。有两个部门称之为section，每部分里的变量称之为option，option可以使用等号也可以使用冒号。接下来我们看python如何获取到配置信息：
+```python
+
+import configparser
+config = configparser.ConfigParser()
+config.read('data/test.ini', encoding='utf-8')
+
+print(config.sections())       # 获取所有section的名称
+print(config.options('db'))    # 获取指定section的所有option的名称
+print(config.items('db'))      # 获取指定section的所有option的名称和值
+delay = config.getint('default', 'delay')    # 获取指定section下指定option的值
+print(delay, type(delay))
+
+salary = config.getfloat('default', 'salary')
+print(salary)
+```
+configparser获取到的值默认都是字符串，如果有整型的配置那就需要获取到之后再单独做类型转换。当然这个模块也提供了获取指定数据类型，如getint，getfloat。
+
+## 六、subprocess模块
+subprocess 模块是 Python 中用于创建和管理子进程的标准库模块，它允许你启动新的应用程序、连接到它们的输入/输出/错误管道，并获取它们的返回码。subprocess模块常用来执行终端命令，和os.system一样。这个模块下的功能很多，但是常用的不多。
+```python
+import subprocess
+obj = subprocess.Popen('ls /Users/wangfujie/Desktop',
+                       shell=True,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+
+res = obj.stdout.read()
+print(res.decode('utf-8'))
+
+err = obj.stderr.read()
+print(err.decode('utf-8'))
+```
+这是 Python 3.5后，引入了最简单的run方法用来执行系统命令。
+```python
+result = subprocess.run(['ls', '-l'], capture_output=True, text=True)
+print(result.stdout)
+```
+同样获取输出，就比Popen简单了很多，这里其他功能你可以自行去研究。
+
+## 七、hashlib模块
+hash是一类算法，常见的有md5,sha256等，它用来将一串输入转换成固定长度的值。常用来进行文件的完整性校验和密码加密。它的特点是对输入敏感、不可逆、计算快且输出长度固定。python内置了hashlib模块可以供我们使用hash算法。
+```python
+import hashlib
+
+h1 = hashlib.md5()
+h1.update('abc'.encode('utf-8'))   # 这里必须传入bytes类型
+h1.update('123'.encode('utf-8'))
+print(h1.hexdigest())              # 计算的是abc123的hash结果。
+```
+这里我们使用md5算法示例，通过updtae给md5对象传入字节类型，可以多次传值，最终按照多次传值的拼接进行计算hash值。虽然hash是不可逆的，但是仍然可以通过hash碰撞得到你的密码，于是就出现 了密码加盐操作。接下来我们看下如何对密码进行加盐。
+```python
+# 密码加盐
+pwd = 'xyxxy520'
+import hashlib
+m = hashlib.md5()
+m.update('天青色等烟雨'.encode('utf-8'))
+m.update(pwd.encode('utf-8'))
+m.update('而我在等你'.encode('utf-8'))
+print(m.hexdigest)
+```
+通过示例可以看到，密码加盐就是在原有的密码上增加一些额外的字符，这样即便是简单的密码加盐后也会变的复杂，通过常用的密码库就不容易破解密码了，增加了攻击者的破解难度。
