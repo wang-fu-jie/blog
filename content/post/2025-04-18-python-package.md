@@ -76,3 +76,13 @@ import game
 game.chat()
 ```
 这里在使用包的时候，导入包名就可以调用到包的功能了，或者可以使用from，效果是一样的。
+
+## 三、包导入补充
+我们先看一个示例
+```python
+from logging import config  # 导入方式1
+import logging.config   # 导入方式二
+```
+在导入方式一中，导入会先执行logging下的__init__.py，如果没有config这个名字，才会找logging文件夹下的子模块。但是这样是用不了logging下的功能的，因为只是执行了logging下的__init__.py，并没有导入logging。
+
+再看导入方式二，一样先执行logging下的__init__.py，果没有config这个名字，才会找logging文件夹下的子模块。但是不同的是，这种方式会导入logging。因此可以直接使用logging下的功能，也可以通过logging.config使用config下的功能。
