@@ -58,7 +58,7 @@ The following line should appear in your bochsrc:
 这样就创建了一个16M的硬盘。根据提示，需要将上述最后一行写入到 bochsrc 文件中。
 * 将 display_library: x 改成 display_library: x, options="gui_debug" 以支持 GUI 的调试方式。
 * 将 boot: floppy 改成 boot: disk，以支持从硬盘启动。
-* 将 magic_break: enabled=0 改成 magic_break: enabled=1，以支持bochs的魔术断点。
+* 将 magic_break: enabled=0 改成 magic_break: enabled=1，以支持bochs的魔术断点。说明在汇编中写 xrgs bx, bx。 bochs将自动在这里打断点
 
 ### 2.3、编写代码
 配置完bochs之后，我们就可以编写代码进行开发调试了。代码如下：
@@ -199,7 +199,7 @@ qemu-system-i386 -s -S -m 32M -boot c -hda master.img
 ```
 执行完后qemu一样启动了1234端口，vscode启动调试即可，和bochs使用一样的调试配置。
 
-### 3.1、vmware启动
+### 4.1、vmware启动
 vmware使用的是vmdk格式的硬盘，通过qemu可以将硬盘转换为vmdk格式，这样就可以使用硬盘创建虚拟机了。
 ```
 qemu-img convert -O vmdk master.img master.vmdk
