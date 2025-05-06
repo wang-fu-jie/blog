@@ -98,7 +98,7 @@ dd if=boot.bin of=master.img bs=512 count=1 conv=notrunc
 bochs -q
 ```
 运行结果如图所示：
-![图片加载失败](/post_images/{{< filename >}}/2.3-01.png)
+![图片加载失败](/post_images/os/{{< filename >}}/2.3-01.png)
 
 ## 三、Ubuntu 配置 bochs-gdb
 在第二章节中，我们安装了bochs，通过结果演示也可以知道，bochs是调试默认是反汇编的，也就是每次只能调试一行汇编代码。后续我们写操作系统时是用C语言编写，因为期望通过vscode对C进行调试，因此就需要安装bochs-gdb。以下安装步骤：

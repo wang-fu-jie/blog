@@ -26,7 +26,7 @@ Python是跨平台语言，支持在windows、mac、linux等多个系统运行�
 
 ### 2.1、在Windows上安装Python
 首先根据你的Windows版本(32位还是64位，目前基本都是64位)到Python官网下载对应的[安装包程序](https://www.python.org/downloads/windows/)
-![图片加载失败](/post_images/{{< filename >}}/2.1-01.png)
+![图片加载失败](/post_images/python/{{< filename >}}/2.1-01.png)
 然后点击exe程序运行，点击下一步安装即可。注意在安装时候勾选上 Add Python 3.x to PATH。
 
 ### 2.2、在Mac上安装Python
@@ -43,14 +43,14 @@ Mac系统会自带Python环境，目前Mac自带的版本是Python2。 因此在
 
 ### 3.1、交互式运行
 登录到命令行提示窗口，输入python。如图:
-![图片加载失败](/post_images/{{< filename >}}/3.1-01.png)
+![图片加载失败](/post_images/python/{{< filename >}}/3.1-01.png)
 如上所示：在执行完python命令后，我们就进行了交互式界面。在交互式界面输入 print("hello world") 代码后，控制台马上执行并打印了 "hello world"。接口输入 exit() 便退出了python的交互式程序
 
 ### 3.2、使用文本编辑器
 在交互式环境运行代码，好处是马上就能看到代码的运行结果，但是同样存在缺点，下次运行还得再敲一遍代码。因此我们写程序通常需要用文本编辑器将代码保存到磁盘上，便于下次直接运行。Windows上可以使用notepadd++、UE甚至记事本都是可以程序的编写，Linux、mac等类UNIX系统可以使用vim工具等。
 
 我们打开文本编辑器，写入 print("hello world")，然后保存文件名为 hello_world.py。文件后缀并没有强制要求为.py，但是我们作为一个python代码文件，强烈要求这样命名。这样看到文件名就知道这是一个python程序。
-![图片加载失败](/post_images/{{< filename >}}/3.2-01.png)
+![图片加载失败](/post_images/python/{{< filename >}}/3.2-01.png)
 如图所示，我们就成功的运行了第一个python程序
 
 ## 四、集成开发工具pycharm
@@ -58,7 +58,7 @@ Mac系统会自带Python环境，目前Mac自带的版本是Python2。 因此在
 
 ### 4.1、使用pycharm编写代码
 在安装完pycharm后，就可以通过pycharm创建项目并编写程序了。
-![图片加载失败](/post_images/{{< filename >}}/4.1-01.png)
+![图片加载失败](/post_images/python/{{< filename >}}/4.1-01.png)
 如图所示：我们成功运行了第一个代码。如果你已经成功运行了第一个程序，就会发现在输入 pr 时，pycharm就自动给你提示了print()函数，非常方便。pycharm还有非常多的强大功能，在后续使用过程你都会慢慢体验到
 
 ## 五、结尾

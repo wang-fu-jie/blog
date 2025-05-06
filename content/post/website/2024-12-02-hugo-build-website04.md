@@ -22,7 +22,7 @@ categories:  [ "网站建设" ]
 
 ### 2.1、注册阿里云域名
 首先我们需要注册一个阿里云平台的账号，这个步骤比较简单。因为是阿里是国内的服务商，使用手机号注册即可。进入到 [阿里云域名控制台](https://dc.console.aliyun.com/next/index?spm=5176.28197619.console-base_product-drawer-right.ddomain.3d5a1ad8hGMDFi#/overview)，搜索期望注册的域名，如 wangfujie:
-![图片加载失败](/post_images/{{< filename >}}/2.1-01.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/2.1-01.jpeg)
 如图所示：未被占用的域名会显示可注册。 点击右侧立即注册按照阿里云的提示操作即可，注册完成后回到域名控制台再域名列表即可看到我们成功注册的域名
 
 ## 三、将域名托管到 Cloudflare
@@ -30,18 +30,18 @@ categories:  [ "网站建设" ]
 
 ### 3.1、托管域名
 登录进 CLoudflare 后，进入首页点击添加域
-![图片加载失败](/post_images/{{< filename >}}/3.1-01.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-01.jpeg)
 点击继续，进入到选择套餐界面。这里我们选择免费套餐即可，对于个人网站这足够了。点击继续，可以看到 Cloudflare 提供两个服务器地址。如图所示：
-![图片加载失败](/post_images/{{< filename >}}/3.1-02.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-02.jpeg)
 然后我们回到阿里云的域名控制台，点击我们注册成功的域名，进行域名详情页，修改DNS为 CLoudFlare 的服务器
-![图片加载失败](/post_images/{{< filename >}}/3.1-03.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-03.jpeg)
 至此，就完成了域名的托管
 
 ## 四、域名绑定
 登录到 Vercel。进入个人网站的详情页，点击 Domains 进行域名添加。输入刚刚注册的域名进行添加即可，可以看到添加完成后，提示无效的配置，如下：
-![图片加载失败](/post_images/{{< filename >}}/3.1-03.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-03.jpeg)
 这是因为我们需要去域名添加记录进行域名解析，按照报错提示到 Cloudflare 添加记录即可，添加后的效果如图所示：
-![图片加载失败](/post_images/{{< filename >}}/3.1-02.jpeg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-02.jpeg)
 添加完成后，需要稍等待一会dns传播。可以在 Vercel 上查看，等 Vercel 上绑定的域名为可用状态后就成功了。这时就可以通过个人域名 [www.wangfujie.cn](www.wangfujie.cn) 来访问个人网站
 
 ## 五、其他说明

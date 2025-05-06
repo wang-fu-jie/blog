@@ -45,7 +45,7 @@ brew install hugo
 hugo new site mysite
 ```
 执行完成会在当前目录生成一个名为 mysite 的文件夹。目录结构如下:
-![图片加载失败](/post_images/{{< filename >}}/2.1-01.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/2.1-01.jpg)
 <!-- {{< rawhtml >}}
 <img src="/images/{{< filename >}}/2.1-01.jpg" alt="图片未加载" style="float: left; margin-right: 10px;">
 <div style="clear: both;"></div>

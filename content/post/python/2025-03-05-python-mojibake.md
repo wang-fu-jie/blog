@@ -22,7 +22,7 @@ categories:  [ "PYTHON" ]
 print('你好')
 ```
 分别使用python3 和 python2 运行这个代码。
-![图片加载失败](/post_images/{{< filename >}}/1-01.jpg)
+![图片加载失败](/post_images/python/{{< filename >}}/1-01.jpg)
 结果如图所示：我们使用gbk存储到硬盘的源文件，并未告诉python解释器使用哪种编码方式去读取到内存转为Unicode格式。 Python3默认按照UTF-8来读取，Python2按照ASCII来读取。结果都产生了报错。
 
 ### 1.1、指定python文件头
@@ -37,7 +37,7 @@ print('你好')
 print('你好')
 ```
 加上文件头后，我们再看运行结果：
-![图片加载失败](/post_images/{{< filename >}}/1.1-01.jpg)
+![图片加载失败](/post_images/python/{{< filename >}}/1.1-01.jpg)
 python3运行成功了，但是python2运行虽然没有报错，确打印了乱码。执行没有报错原因是，我们在第一行指定了文件头告诉解释器按照哪种编码格式读取，解释器在读取第一行字符仍然按照默认编码读取，因为文件头是英文，因此无论哪种编码都可以正常读取，读取文件之后再按照文件头指定的编码继续向下读取。
 
 ### 1.2、解决执行乱码

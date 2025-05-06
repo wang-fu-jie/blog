@@ -168,7 +168,7 @@ docker build -t redis_debug_1.2.6 .
 
 ## 二、vscode远程调试
 通过上一节，我们已经创建好了容器。接下来就进行vscode调试，首先自行进行vscode的安装。然后安装Remote-SSH 插件。接着，按 shift + command + p  (win 平台按Ctrl + Shift + p)通过 Remote 插件连接到远程的 Linux 服务器，并打开远程服务器。远程服务器打开容器的/opt/redis_src文件夹即可，笔者的容器已经编译好了redis存放到了这个路径。
-![图片加载失败](/post_images/{{< filename >}}/2-01.png)
+![图片加载失败](/post_images/redis/{{< filename >}}/2-01.png)
 这里对文件夹的内容进行下简要说明：
 * build文件夹是编译好的文件
 * .vscode/launch.json是调试文件

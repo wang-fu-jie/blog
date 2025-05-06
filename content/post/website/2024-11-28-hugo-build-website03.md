@@ -33,13 +33,13 @@ Vercel 是一个面向现代开发者的全球化部署平台，旨在简化部�
 
 ### 2.1、创建 Vercel 账号
 登录 [Vercel官网](https://vercel.com/), 我们目的是将 GitHub 上的站点托管到 Vercel。因此直接用 GitHub 登录 Vercel 是最方便的。如图所示:
-![图片加载失败](/post_images/{{< filename >}}/2.1-01.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/2.1-01.jpg)
 
 ## 三、创建项目并导入仓库
 第一步我们需要先创建一个项目
-![图片加载失败](/post_images/{{< filename >}}/3.1-01.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-01.jpg)
 导入 git 仓库，这里导入所有仓库即可
-{{< rawhtml >}}<img src="/post_images/{{< filename >}}/3.1-02.jpg" alt="图片加载失败" width="60%" />{{< /rawhtml >}}
+{{< rawhtml >}}<img src="/post_images/website/{{< filename >}}/3.1-02.jpg" alt="图片加载失败" width="60%" />{{< /rawhtml >}}
 
 ## 四、源码托管到 Vercel
 这里我们首先介绍源码托管的方式，笔者本人比较推荐这种方式。因为每次将源码提交到 GitHub 后即可自动开始编译。省去了自己编译再托管到 GitHub Pages上的步骤
@@ -50,14 +50,14 @@ Vercel 是一个面向现代开发者的全球化部署平台，旨在简化部�
 
 ### 4.2、导入项目
 选择你的源代码仓库，例如我的示例是 blog 仓库，然后点击 Import 按钮
-![图片加载失败](/post_images/{{< filename >}}/4.2-01.jpg)
+![图片加载失败](/post_images//website{{< filename >}}/4.2-01.jpg)
 
 ### 4.3、项目设置&部署
 项目导入之后，Vercel会自动识别你的项目框架为 Hugo  
 Build Command 填hugo  
 Output directory填public  
 环境变量填写 hugo 的版本号，可以通过命令 hugo version 查看。
-{{< rawhtml >}}<img src="/post_images/{{< filename >}}/4.3-01.jpg" alt="图片加载失败" width="60%" />{{< /rawhtml >}}
+{{< rawhtml >}}<img src="/post_images/website/{{< filename >}}/4.3-01.jpg" alt="图片加载失败" width="60%" />{{< /rawhtml >}}
 然后点击 Deploy 即可发布项目
 
 ### 4.4、访问站点

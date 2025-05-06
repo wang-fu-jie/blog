@@ -20,10 +20,10 @@ GitHub Pages 是一项静态站点托管服务。它直接从 GitHub 上的仓�
 ### 1.1、创建 Github 账号和代码仓库
 登录 [Github 官网首页](https://github.com/), 点击右上角的注册按钮，输入可用邮箱进行验证注册。账号注册完成后登录账号进行仓库创建。如图所示：填写仓库名称为 wang-fu-jie.github.io。 勾选上 Add a README file 复选框 (目的是为了自动创建 main 分支)， 其他保持默认，点击右下角的 Create repositoty 按钮
 {{< rawhtml >}}<br><br><span style="font-weight: 700; color: red">注意：这里的仓库命名必须为{your_username}.github.io</span>{{< /rawhtml >}}
-![图片加载失败](/post_images/{{< filename >}}/1.1-01.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/1.1-01.jpg)
 
 然后进入的刚刚创建的仓库， 进入设置页面，点击设置页面的 Pages 按钮。 即可以看到个人的站点域名，如下所示：
-![图片加载失败](/post_images/{{< filename >}}/1.1-02.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/1.1-02.jpg)
 点击 Vist site 按钮即可访问，当前目前站点没有任何信息，因为我们还没有降个人博客做托管。 这里如果你不想使用 Github Pages 提供的默认域名，也可以自定义域名，自定义域名不再过多介绍，有兴趣可以参考官方手册
 
 ## 二、 托管个人博客站点
@@ -44,7 +44,7 @@ git pull origin main                   # 拉取代码
 git push -u origin main                # 推送代码
 ```
 这时再次访问 Github 提供的域名，就可以正常访问到个人网站
-![图片加载失败](/post_images/{{< filename >}}/2.2-01.jpg)
+![图片加载失败](/post_images/website/{{< filename >}}/2.2-01.jpg)
 
 ## 三、 可能遇到的问题
 1、国内部分用户如果访问 Github 比较慢， 可以选择国内的替代方案 Gitee Pages。但是目前官方公告：因服务维护调整，Gitee Pages 暂停提供服务，给您带来不便深感抱歉，感谢对 Gitee Pages 服务的支持。并未说永久下线，有需要可实时关注能否恢复访问

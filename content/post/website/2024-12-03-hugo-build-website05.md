@@ -21,28 +21,28 @@ categories:  [ "网站建设" ]
 #### 2.1、收录网站
 登录[谷歌收录网站](https://search.google.com/search-console/welcome?utm_source=wmx&utm_medium=deprecation-pane&utm_content=home#utm_source=zh-CN-wmxmsg&utm_medium=wmxmsg&utm_campaign=bm&authuser=0)
 然后我们自定义的域名[https://www.wangfujie.cn](https://www.wangfujie.cn)
-![图片加载失败](/post_images/{{< filename >}}/2.1-01.png)
+![图片加载失败](/post_images/website/{{< filename >}}/2.1-01.png)
 
 #### 2.2、网站验证
 在上一步点击继续后，Google需要你验证网站的所有权，即验证这个网站是属于你的。比较简单的验证方式是使用html文件验证。按照提示下载html文件，将该html文件放在站点的static目录下，上传到 GitHub 进行验证即可
 
 #### 2.3、配置站点地图
 在网站验证成功后，需要配置我们的站点地图。这样谷歌才可以根据地图搜索我们网站的网页。站点地图一般叫做sitemap.xml, 每当我们的网站有更新站点地图就会更新，谷歌会通过定期的去爬取站点地图。
-![图片加载失败](/post_images/{{< filename >}}/2.3-01.png)
+![图片加载失败](/post_images/website/{{< filename >}}/2.3-01.png)
 
 #### 2.4、收录验证
 在收录完成后，可以在谷歌搜索栏输入 site:wangfujie.cn 进行验证收录是否成功
-![图片加载失败](/post_images/{{< filename >}}/2.4-01.png)
+![图片加载失败](/post_images/website/{{< filename >}}/2.4-01.png)
 
 ### 三、百度收录
 #### 3.1、收录网站
 首先进入[百度资源搜索平台](https://ziyuan.baidu.com/site/siteadd#/)
 输入网站，点击下一步
-![图片加载失败](/post_images/{{< filename >}}/3.1-01.png)
+![图片加载失败](/post_images/website/{{< filename >}}/3.1-01.png)
 
 #### 3.2、网站验证
 和谷歌收录一样，需要对网站的所有权进行验证。如图所示，下载html文件放到static文件夹下
-![图片加载失败](/post_images/{{< filename >}}/3.2-01.png)
+![图片加载失败](/post_images/website/{{< filename >}}/3.2-01.png)
 
 #### 3.3、提交站点
 百度本来是和谷歌一样支持使用站点地图的，但是在2023年9月后百度限制了资源提交。目前只能手动提交或者通过API提交，需要整理出网站的URL手动粘贴提交即可。
