@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - 日志模块
 subtitle:    "日志模块"
-description: ""
-excerpt:     ""
+description: "日志通常用于跟踪程序运行状态、调试问题以及记录重要事件。Python标准库中内置了logging模块用于记录日志，它提供了灵活的日志记录系统。本文将介绍Python日志模型的使用方法。"
+excerpt:     "日志通常用于跟踪程序运行状态、调试问题以及记录重要事件。Python标准库中内置了logging模块用于记录日志，它提供了灵活的日志记录系统。文将介绍Python日志模型的使用方法。"
 date:        2025-05-05T09:59:56+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/69/2a/street_road_night_shutter_speed_transport_highway_history_architecture-1071668.jpg!d"

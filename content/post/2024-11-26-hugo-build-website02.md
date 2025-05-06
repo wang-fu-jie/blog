@@ -3,7 +3,7 @@ title:       搭建个人博客网站之二、将hugo站点托管到Github Pages
 subtitle:    "将hugo站点托管到Github Pages上"
 description: "GitHub Pages 提供了一项静态网页托管服务，因此可以直接将个人博客网站托管到Github Pages，它可以为个人网站提供免费二级域名供访问。它可以从 GitHub 上的仓库获取 HTML、CSS 和 JavaScript 文件，通过构建过程运行文件，然后发布网站"
 excerpt:     "GitHub Pages 提供了一项静态网页托管服务，因此可以直接将个人博客网站托管到Github Pages，它可以为个人网站提供免费二级域名供访问。它可以从 GitHub 上的仓库获取 HTML、CSS 和 JavaScript 文件，通过构建过程运行文件，然后发布网站"
-date:        2024-06-12T10:11:26+08:00
+date:        2024-11-26T10:11:26+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/23/dc/sailing_ship_rushing_water_river_ship_vessel_sailboat_shore_transport-1082029.jpg!d"
 published:   true
