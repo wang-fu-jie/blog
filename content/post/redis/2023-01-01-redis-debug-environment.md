@@ -9,7 +9,7 @@ image:       "https://c.pxhere.com/photos/13/9f/hand_color_crayon_art_drawing-18
 published:   true
 tags:
     - Redis
-slug:        "redis-denug-environment"
+slug:        "redis-debug-environment"
 categories:  [ "REDIS" ]
 ---
 
