@@ -1,8 +1,8 @@
 ---
 title:       自制操作系统 - 基于Ubuntu搭建开发环境
 subtitle:    "基于Ubuntu搭建开发环境"
-description: ""
-excerpt:     ""
+description: "开发操作系统首先需要搭建开发环境，基于不同的调试方式可以结合使用bochs和qemu两款虚拟软件。本文将分别介绍在Ubuntu系统上如何搭建和配置bochs和qemu，以及分别调试汇编和C程序。"
+excerpt:     "开发操作系统首先需要搭建开发环境，基于不同的调试方式可以结合使用bochs和qemu两款虚拟软件。本文将分别介绍在Ubuntu系统上如何搭建和配置bochs和qemu，以及分别调试汇编和C程序。"
 date:        2024-01-01T19:19:11+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/6f/db/owl_hunt_nature_hunter_predator_animal_world_animal_wildlife_photography-774736.jpg!d"
