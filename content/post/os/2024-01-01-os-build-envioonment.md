@@ -205,3 +205,6 @@ vmware使用的是vmdk格式的硬盘，通过qemu可以将硬盘转换为vmdk�
 qemu-img convert -O vmdk master.img master.vmdk
 ```
 使用vmware启动的过程这里不再进行演示，有兴趣的自行配置即可。
+
+## 五、参考资料
+[Onix操作系统实现](https://github.com/StevenBaby/onix/tree/dev)
