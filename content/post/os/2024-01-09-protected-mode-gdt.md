@@ -69,7 +69,7 @@ typedef struct pointer
     unsigned int base;
 } __attribute__((packed)) pointer;
 ```
-CPU提供了一个寄存器 gdtr 用于获取全局描述符表的起始位置和长度。提供了两个支持操作GDT,
+CPU提供了一个寄存器 gdtr 用于获取全局描述符表的起始位置和长度。提供了两个指令支持操作GDT,
 ```asm
 lgdt [gdt_ptr]   ; 加载gdt
 sgdt [gdt_ptr]   ; 保存gdt
