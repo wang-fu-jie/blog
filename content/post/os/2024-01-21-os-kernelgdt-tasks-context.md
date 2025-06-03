@@ -134,7 +134,7 @@ void task_init()
 从这个代码我们可以看到，创建两个任务，分配到内存0x1000和0x2000的位置。然后交替调度两个任务。这里重点是task_switch函数，这个函数用汇编实现，代码如下：
 ```asm
 task_switch:
-    push ebp   ; 保存战阵
+    push ebp   ; 保存栈帧
     mov ebp, esp
 
     push ebx   ; 保存ABI约定的三个寄存器
