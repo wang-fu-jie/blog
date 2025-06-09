@@ -3,7 +3,7 @@ title:       自制操作系统 - 中断
 subtitle:    "中断"
 description: "中断（Interrupt）是 CPU 响应外部或内部事件的机制，它会 暂停当前执行的程序，转而去处理更高优先级的任务，处理完成后再恢复原程序的执行。本文将介绍实模式和保护模式中断时如何处理的，详细介绍保护模式的中断描述符，以及如何通过时间中断实现任务的切换。"
 excerpt:     "中断（Interrupt）是 CPU 响应外部或内部事件的机制，它会 暂停当前执行的程序，转而去处理更高优先级的任务，处理完成后再恢复原程序的执行。本文将介绍实模式和保护模式中断时如何处理的，详细介绍保护模式的中断描述符，以及如何通过时间中断实现任务的切换。"
-date:        2025-05-29T10:03:07+08:00
+date:        2024-01-23T10:03:07+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/1b/53/kickboxer_girl_moscow_thai_kickboxing_beautiful_girl_long_hair_training_apparatus-801748.jpg!d"
 published:   true
