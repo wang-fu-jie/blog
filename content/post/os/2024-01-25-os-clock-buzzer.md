@@ -3,7 +3,7 @@ title:       自制操作系统 - 计数器、时钟与蜂鸣器
 subtitle:    "计数器、时钟与蜂鸣器"
 description: "计算机硬件中使用CMOS实时时钟（RTC）数据, 它使用电池供电，维持系统时间和日期。通过 I/O 端口读写CMOS寄存器，用来获取CMOS中的时间和实时时钟信息，并触发周期性中断或时钟中断。"
 excerpt:     "计算机硬件中使用CMOS实时时钟（RTC）数据, 它使用电池供电，维持系统时间和日期。通过 I/O 端口读写CMOS寄存器，用来获取CMOS中的时间和实时时钟信息，并触发周期性中断或时钟中断。"
-date:        2025-06-05T18:19:33+08:00
+date:        2024-01-25T18:19:33+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/83/d5/girl_beauty_model_pretty_outside_female_bella_young-665056.jpg!d"
 published:   true
