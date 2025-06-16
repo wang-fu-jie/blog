@@ -1,8 +1,8 @@
 ---
 title:       Python基础 - socket套接字
 subtitle:    "socket套接字"
-description: "socket套接字帮我们封装了网络通信的协议，直接使用socket可以很简单的实现网络编程。本文将基于socket套接字实现一个简单的C/S程序，以及解决TCP协议的粘包问题。"
-excerpt:     "socket套接字帮我们封装了网络通信的协议，直接使用socket可以很简单的实现网络编程。本文将基于socket套接字实现一个简单的C/S程序，以及解决TCP协议的粘包问题。"
+description: "socket套接字帮我们封装了网络通信的协议，直接使用socket可以很简单的实现网络编程。本文将基于socket套接字实现一个简单的C/S程序，并解决TCP协议的粘包问题，以及通过标准库的sockerserver模块实现客户端的并发服务。"
+excerpt:     "socket套接字帮我们封装了网络通信的协议，直接使用socket可以很简单的实现网络编程。本文将基于socket套接字实现一个简单的C/S程序，并解决TCP协议的粘包问题，以及通过标准库的sockerserver模块实现客户端的并发服务。"
 date:        2025-06-10T17:41:45+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/13/5e/moose_bull_elk_yawns-760371.jpg!d"
@@ -119,3 +119,50 @@ cond.send(data)
 
 ## 四、UDP不粘包
 UDP没有粘包问题，UDP协议每一条消息都是完整的报文。 那如果UDP发送的数据量大，但是客户端接受的少会出现什么问题呢？ UDP协议一次发送就必须对应一次接收。假设发送了5个字节，但是只接受了3个，另外两个就会被认为丢掉不要了，再次接受也是收到新的消息，这是在linux上的行为。 在windows上会直接报错用户接受数据的缓冲区比数据报小。UDP最大长度是1472字节，因此也一般不会使用UDP发送大数据。
+
+
+## 五、 socketserver介绍
+前面我们实现的服务端只能同时响应一个客户端。如果想是服务端同时响应多个客户端，就需要用到并发编程，除了使用多线程多进程并发技术外，也可以使用封装好的模块socketserver来实现并发效果。socketserver 是 Python 标准库中的一个模块，它简化了网络服务器的创建过程，是对底层 socket 模块的高级封装。
+
+socketserver模块支持线程并发也支持进程并发，进程并发使用的fork方式，属于unix的系统调用，因此windows不支持，接下来的示例代码我们使用线程并发。
+
+### 5.1、TCP并发服务端
+基于socketserver就可以实现TCP的并发客户端，使用socketserver要求必须定义一个类并实现handle方法，该方法用来实现数据通信。代码如下：
+```python
+import socketserver
+
+class RequestHandle(socketserver.BaseRequestHandler):
+    def handle(self):
+        print(self.request)  # self.request = conn
+        print(self.client_address)
+        while True:
+            data = self.request.recv(1024)  # 1024是一次接收的数据量
+            if not data:
+                break
+            data = data.decode('utf-8')
+            print('客户端发过来的数据：', data)
+
+            self.request.send(data.upper().encode('utf-8'))
+
+sk = socketserver.ThreadingTCPServer(('127.0.0.1', 5002), RequestHandle)  # 这是使用的线程，也可以使用进程
+sk.serve_forever()   # 每获取一个连接对象，就启动一个线程
+```
+如上我们就实现了TCP并发服务端，每连接一个客户端服务端就会启动一个新线程用于和客户端通信，该线程自动调用handle方法。客户端的代码不需要修改，因为客户端本身是不需要并发的。
+
+
+### 5.2、UDP并发客户端
+在原来的UDP中，启动服务端后再启动两个客户端，此时两个客户端发出消息服务都能进行回应，而不是像TCP那样第二个客户端直接阻塞。看起来UDP默认就支持并发，其实这不是真正的并发，是因为服务端响应比较快，在短时间内分别响应了多个客户端，如果其中一个客户端数据量比较大，那另一个客户端会阻塞等待响应，可以在客户端使用time模块阻塞来进行模拟延迟响应。
+
+UDP真正的并发实现也需要使用sockerserver模块，代码如下：
+```python
+import socketserver
+
+class RequestHandle(socketserver.BaseRequestHandler):
+    def handle(self):
+        print('客户端发来的数据：', self.request[0])
+        print(self.request[1].sendto(self.request[0].upper(), self.client_address))
+
+sk = socketserver.ThreadingUDPServer(('127.0.0.1', 5006), RequestHandle)
+sk.serve_forever()
+```
+如上所示，就实现UDP并发了，sk.serve_forever()接收数据后，调用handle方法进行处理。
