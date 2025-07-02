@@ -1,5 +1,5 @@
 ---
-title:      自制操作系统 - 键盘驱动
+title:       自制操作系统 - 键盘驱动
 subtitle:    "键盘驱动"
 description: "键盘中断时8259a芯片的1号中断，中断向量为0x21。当键盘按键时，需要处理0x21中断，获取按下的扫描码，根据不同的扫描码进行处理，例如字符就打印。目前使用键盘都是第二套扫描码，但是内部会被8042转换为第一套扫描码，因此第一套不存在的扫描码就属于扩展码。"
 excerpt:     "键盘中断时8259a芯片的1号中断，中断向量为0x21。当键盘按键时，需要处理0x21中断，获取按下的扫描码，根据不同的扫描码进行处理，例如字符就打印。目前使用键盘都是第二套扫描码，但是内部会被8042转换为第一套扫描码，因此第一套不存在的扫描码就属于扩展码。"
@@ -135,3 +135,78 @@ static void set_leds()
 ```
 如上所示，只需遵循键盘协议，当按下指定键时，设置键盘对应LED亮即可。这里不必深究，在运行时可以使用bochs，bochs可以模拟键盘的led灯。
 
+
+## 四、循环队列
+当键盘在被按下，但是此时确没有程序去使用键盘产生的字符。此时就需要把这些字符暂存到队列中去。队列属于常见的数据结构。定义如下：
+```cpp
+typedef struct fifo_t
+{
+    char *buf;
+    u32 length;
+    u32 head;
+    u32 tail;
+} fifo_t;
+
+void fifo_init(fifo_t *fifo, char *buf, u32 length);
+bool fifo_full(fifo_t *fifo);
+bool fifo_empty(fifo_t *fifo);
+char fifo_get(fifo_t *fifo);
+void fifo_put(fifo_t *fifo, char byte);
+```
+队列是先进先出的数据结构，我们这里实现的循环队列，如果队列满了就移除最早入队的那个元素。接下来就可以修改键盘中断处理函数，当键盘产生字符将字符压入队列。不再直接打印。我们这里看下键盘对循环队列的应用：
+```cpp
+// LOGK("keydown %c \n", ch);
+fifo_put(&fifo, ch);
+if (waiter != NULL)
+{
+    task_unblock(waiter);
+    waiter = NULL;
+}
+// ----------------------------
+
+u32 keyboard_read(char *buf, u32 count)
+{
+    lock_acquire(&lock);
+    int nr = 0;
+    while (nr < count)
+    {
+        while (fifo_empty(&fifo))
+        {
+            waiter = running_task();  // 如果队列没有数据，就阻塞进行等待。
+            task_block(waiter, NULL, TASK_WAITING);
+        }
+        buf[nr++] = fifo_get(&fifo);
+    }
+    lock_release(&lock);
+    return count;
+}
+```
+先看下键盘中断的修改。键盘每触发一次中断直接将字符写入队列。并且如果此时有任务在等待获取键盘输入，就将它唤醒。相当于通知它有键盘输入进来了。还实现了一个keyboard_read函数用于从队列读取字符。这个函数是不支持并发的，队列属于共享资源读取时需要上锁。
+
+
+## 五、键盘读取测试
+我们修改init任务，让它读取键盘。代码如下：
+```cpp
+void init_thread()
+{
+    set_interrupt_state(true);
+    u32 counter = 0;
+
+    char ch;
+    while (true)
+    {
+        bool intr = interrupt_disable();
+        keyboard_read(&ch, 1);
+        printk("%c", ch);
+
+        set_interrupt_state(intr);
+    }
+}
+```
+如上所示，当内核启动进入init线程后，因为keyboard_read函数的执行需要保证不能被中断，因此init进入后先做了中断关闭。我们来梳理下运行流程。
+* init进程启动，关闭中断进入读取键盘输入
+* 此时键盘缓冲区没有数据，阻塞进行等待。
+* 当我们敲击键盘输入数据后，数据进入队列并环境init线程
+* init线程去队列读取输入的输入并打印到控制台。
+
+此时你是否好奇，既然init线程关了中断，那为何键盘中断可以执行。这是因为当缓冲区没数据时，keyboard_read函数中将init线程阻塞，此时切换到了idle线程，idle线程开启了中断等待键盘中断的到来。键盘中断到来并执行后唤醒了init线程，init线程继续读取数据。
