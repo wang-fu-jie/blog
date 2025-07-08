@@ -3,7 +3,7 @@ title:       自制操作系统 - 进入用户模式
 subtitle:    "进入用户模式"
 description: "用户态和内核态的特权级不同，intel将特权级分为0~3，内核运行在0特权级，用户运行在3特权级，特权级的切换需要依赖任务状态段TSS完成。我们使用 TSS 的主要作用是利用其中的 ss0 和 esp0，使得用户态的程序可以转到内核态，不会使用TSS进行硬件任务切换。"
 excerpt:     "用户态和内核态的特权级不同，intel将特权级分为0~3，内核运行在0特权级，用户运行在3特权级，特权级的切换需要依赖任务状态段TSS完成。我们使用 TSS 的主要作用是利用其中的 ss0 和 esp0，使得用户态的程序可以转到内核态，不会使用TSS进行硬件任务切换。"
-date:        2025-06-30T20:49:05+08:00
+date:        2024-02-10T20:49:05+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/f7/43/church_decoration_night_architecture_color_winter_church_street_burlington-1233900.jpg!d"
 published:   true
