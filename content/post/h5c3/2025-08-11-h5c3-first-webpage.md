@@ -9,7 +9,6 @@ image:       "https://c.pxhere.com/photos/b6/66/anonymous_studio_figure_photogra
 published:   true
 tags:
     - HTML
-    - CSS
 slug:        "h5c3-first-webpage"
 categories:  [ "H5C3" ]
 ---
@@ -33,6 +32,7 @@ HTML和CSS都是w3c组织(万维网联盟)定义的语言标准。
 前端的开发推荐使用vscode和chorm浏览器，当然pycharm专业版也是可以的。使用vscode这里建议安装以下插件：
 * live server: 启动一个具有实时刷新功能的本地开发服务器，用于静态和动态页面
 * Auto Rename Tag: 自动重命名配对的HTML/XML标签
+* Chinese lorem:  生成中文简体的乱数假文
 
 ## 四、第一个网页
 配置好开发环境就可以写网页的代码了，新建一个文件，后缀为html或htm结尾，输入一个 ! 好，即可自动生成html的框架。如下：
