@@ -46,7 +46,7 @@ typedef struct descriptor /* 共 8 个字节 */
 ```
 
 ### 2.1、段类型
-段类型由type 和  segment控制，segment占1位，当为0时表示系统段，当位1时表示代码段或数据库。type占4位，当segment为1时，type的4位分别如下：
+段类型由type 和  segment控制，segment占1位，当为0时表示系统段，当位1时表示代码段或数据段。type占4位，当segment为1时，type的4位分别如下：
 
 | X | C/E | R/W | A |
 * A: Accessed 是否被 CPU 访问过

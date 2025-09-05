@@ -47,6 +47,7 @@ test_args(5, 1, 0xaa, 5, 0x55, 10);  // 调用函数
 
 注意：这里在调试时，可以使用 -exec display/16xw $sp 观察栈的变化。在函数调用时，会压入旧栈帧和eip，eip是call指令自动压入的。如图所示：
 ![图片加载失败](/post_images/os/{{< filename >}}/1-01.png)
+从这个图可以看到栈的变化，当执行test_args函数时，现在栈0xffe8 和 0xffec中先存入了两个值，这两个值是编译器在函数序言里会生成 frame descriptor / unwind 信息。不用深究。接下来就是从右到左压入了6个参数。接下来是call执行自动压入了返回地址，继续是栈帧ebp。最后是进入函数test_args后给局部变量预留了16个字节的空间。
 
 ## 二、printk实现
 printk是内核用来打印的函数，这里参考printf的功能。我们知道printf是使用%后跟一堆参数，格式如： %[flags][width][.prec][h|l|L][type] 其中：

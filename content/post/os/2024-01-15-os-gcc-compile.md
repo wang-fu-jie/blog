@@ -86,7 +86,7 @@ gcc --verbose -m32 main.c -I../include -o main.out -e kernel_init -nostartfiles
 ```
 
 ## 三、编译内核
-到此就完成整个编译过程，当然这里生成的程序是不能执行运行的，因为在保护模式中，访问了只有操作系统才能访问的内存，会报段错误。因此我们需要将目标文件链接到操作系统。修改makefile。将生成的main.o 连接到 sysytem.bin。最后还需要在内核中调用kernel_init函数
+到此就完成整个编译过程，当然这里生成的程序是不能执行运行的，因为在保护模式中，访问了只有操作系统才能访问的内存，会报段错误。因此我们需要将目标文件链接到操作系统。修改makefile。将生成的main.o 链接到 system.bin。最后还需要在内核中调用kernel_init函数
 ```asm
 [bits 32]
 extern kernel_init
