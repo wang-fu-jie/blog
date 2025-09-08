@@ -137,7 +137,7 @@ task_switch:
     push ebp   ; 保存栈帧
     mov ebp, esp
 
-    push ebx   ; 保存ABI约定的三个寄存器
+    push ebx   ; 保存ABI约定的三个寄存器，保存了当前任务的寄存器
     push esi
     push edi
 
@@ -158,7 +158,7 @@ task_switch:
 ```
 
 ## 三、调试进程切换
-现在我们启动调试，看下0x1000出的内存，如下所示：
+现在我们启动调试，看下0x1000处的内存，如下所示：
 ![图片加载失败](/post_images/os/{{< filename >}}/3-01.png)
 如图可以看到，在0x1000这一页内存位置，最高位存储是我们代码中设置的寄存器值，低位是PCB信息，PCB的最低位也是保存的esp。和我们前边给的图一一对应。
 
