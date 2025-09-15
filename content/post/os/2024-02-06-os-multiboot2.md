@@ -16,7 +16,7 @@ categories:  [ "操作系统" ]
 ## 一、multiboot2介绍
 在linux系统中，是通过grub来引导操作系统程序。GRUB，全称 GRand Unified Bootloader，是一个多操作系统引导程序（Bootloader），主要用于在计算机启动时选择和引导操作系统内核，它是启动电脑后运行的第一个软件，它负责把控制权交给操作系统内核。
 
-Multiboot2是一个协议标准，GRUB 是这个协议的实现者。要支持 multiboot2，内核必须添加一个 multiboot 头，而且必须再内核开始的 32768(0x8000) 字节，而且必须 64 字节对齐；
+Multiboot2是一个协议标准，GRUB 是这个协议的实现者。要支持 multiboot2，内核必须添加一个 multiboot 头，而且必须在内核开始的 32768(0x8000) 字节，而且必须 64 字节对齐；
 
 ## 二、multiboot2头
 在此之前我们自制的操作系统，在编译好内核程序后直接通过dd指令写入硬盘，且bochs是通过硬盘启动的。但是有了grub后，系统就不再通过硬盘启动， 而是通过cdrom启动。配置bochs配置文件：
