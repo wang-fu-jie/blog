@@ -79,7 +79,7 @@ TSS段描述符需要定义在GDT中，如下：
 #define KERNEL_CODE_SELECTOR (KERNEL_CODE_IDX << 3)
 #define KERNEL_DATA_SELECTOR (KERNEL_DATA_IDX << 3)
 #define KERNEL_TSS_SELECTOR (KERNEL_TSS_IDX << 3)        // 内核TSS段选择子，特权级为0
-#define USER_CODE_SELECTOR (USER_CODE_IDX << 3 | 0b11)
+#define USER_CODE_SELECTOR (USER_CODE_IDX << 3 | 0b11)    // 用户段选择子的特权级为3
 #define USER_DATA_SELECTOR (USER_DATA_IDX << 3 | 0b11)
 ```
 在GDT初始化时，对用户态的描述符也进行了初始化，这里不再贴具体的代码。区别是用户态的DPL被设置为3，且目前用户态可以访问内核态的代码，这个后续会再改进。接下来是TSS的初始化：
@@ -178,7 +178,7 @@ void task_to_user_mode(target_t target)  // target是进入用户态需执行的
     iframe->ss = USER_DATA_SELECTOR;
     iframe->cs = USER_CODE_SELECTOR;
     iframe->error = ONIX_MAGIC;
-    u32 stack3 = alloc_kpage(1); // todo replace to user stack
+    u32 stack3 = alloc_kpage(1); // todo replace to user stack， 这里是用内核内存申请了用户栈，因为此时我们还没有内存管理
     iframe->eip = (u32)target;
     iframe->eflags = (0 << 12 | 0b10 | 1 << 9);
     iframe->esp = stack3 + PAGE_SIZE;
@@ -214,11 +214,13 @@ void init_thread()
     task_to_user_mode(real_init_thread);
 }
 ```
-现在就可以进行调试了。在进入了内核态后，再做IO就会触发一般性保护异常。并且进入用户态之后不能再使用内核态的打印函数。进入用户态之后可以通过系统调用回到内核态。我们这里数量一下进入内核态的过程：
-1. 进程初始化，执行init进程，init调用task_to_user_mode函数
-2. task_to_user_mode函数中获取当前运行的进程，即init进程。并修改init进程的栈数据，如选择子修改为用户态选择子
-3. task_to_user_mode函数将定义好的iframe赋值给esp，主动调用一次中断处理返回函数
-4. 这些被设置好栈数据和esp就会直接在中断返回函数中出栈。这样就返回到了read_init_thread函数进入了内核态
+现在就可以进行调试了。在进入了内核态后，再做IO就会触发一般性保护异常。并且进入用户态之后不能再使用内核态的打印函数。进入用户态之后可以通过系统调用回到内核态。我们这里梳理一下进入内核态的过程：
+1. 内核初始化完成后，在main文件中打开中断，时间中断触发后调度到init进程
+2. 执行init进程，init调用task_to_user_mode函数
+3. task_to_user_mode函数中获取当前运行的进程，即init进程。并修改init进程的栈数据，如选择子修改为用户态选择子
+4. task_to_user_mode函数将定义好的iframe赋值给esp，主动调用一次中断处理返回函数
+5. CPU检测到特权级切换，IRET 指令从栈中恢复 ESP 和 SS
+6. 这些被设置好栈数据和esp就会直接在中断返回函数中出栈。这样就返回到了read_init_thread函数进入了用户态
 
 进入用户态后，cs的选择子是23，即cpu的rpl被设置为3，运行在特权级3上。此时再执行IO(int/out操作)操作就触发一般保护异常。在用户态时可以进行系统调用，系统调用时将特权级3转换为特权级0的。接下来是系统调用的过程：
 1. 用户态执行sleep()函数，触发系统调用int 0x80
@@ -234,11 +236,11 @@ void task_activate(task_t *task)
 
     if (task->uid != KERNEL_USER)
     {
-        tss.esp0 = (u32)task + PAGE_SIZE;
+        tss.esp0 = (u32)task + PAGE_SIZE; // 获取用户进程的内核栈，因为只有用户进行做特权级切换会用到，内核进程时用不到的
     }
 }
 ```
-在调试过程中，你会发现当执行0x80系统调用时，CPU会自动检测当前的特权级属于用户态，进行特权级提升，栈自动从用户栈跳转到了内核栈，这是cpu硬件完成的，硬件自动 从 TSS（Task State Segment） 中加载 SS0 和 ESP0（内核栈指针），替换当前的用户栈 SS:ESP （SS0 和 ESP0在TSS初始化时就已经指定了）。
+在调试过程中，你会发现当执行0x80系统调用时，CPU会自动检测当前的特权级属于用户态，进行特权级提升，栈自动从用户栈跳转到了内核栈，这是cpu硬件完成的，硬件自动 从 TSS（Task State Segment） 中加载 SS0 和 ESP0（内核栈指针），替换当前的用户栈 SS:ESP （SS0在TSS初始化时就已经指定了, ESP0在进程切换时进行赋值）。中断执行完就会通过 iret 回到用户态的栈。
 
 ## 四、说明
 因为目前系统调用只有sleep，sleep之后就进入了idle线程，无法调试系统调用进入内核态执行完成后再返回用户态的过程。这里我们下一篇文章再进行调试。另外虽然目前已经进入了用户态，但是仍然可以操作内核的内存，因为目前还没有对用户态的内存进行管理。
