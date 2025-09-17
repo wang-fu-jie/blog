@@ -65,12 +65,12 @@ void page_fault(
     u32 vector0, u32 error, u32 eip, u32 cs, u32 eflags)
 {
     assert(vector == 0xe);
-    u32 vaddr = get_cr2();
+    u32 vaddr = get_cr2();    // 通过cr2寄存器获取触发缺页异常的虚拟地址
     LOGK("fault address 0x%p\n", vaddr);
     page_error_code_t *code = (page_error_code_t *)&error;
     task_t *task = running_task();
-    assert(KERNEL_MEMORY_SIZE <= vaddr < USER_STACK_TOP);
-    if (!code->present && (vaddr > USER_STACK_BOTTOM))
+    assert(KERNEL_MEMORY_SIZE <= vaddr < USER_STACK_TOP);  // 判断虚拟地址位于用户内存空间，即8M以上的位置
+    if (!code->present && (vaddr > USER_STACK_BOTTOM))   // 如果虚拟地址属于用户态栈，就申请进行内存映射
     {
         u32 page = PAGE(IDX(vaddr));
         link_page(page);
@@ -79,7 +79,7 @@ void page_fault(
     panic("page fault!!!");
 }
 ```
-copy_pde函数实现的是拷贝页表，用户进程中每个进程都是使用自己独立的页表，因此需要每个用户进程需要拷贝页表。copy_pde函数会获取当前进程的页目录，申请一页内核内存，把当前进程的页目录拷贝到新申请的这页内存中。
+copy_pde函数实现的是拷贝页表，用户进程中每个进程都是使用自己独立的页表，因此需要每个用户进程需要拷贝页表。copy_pde函数会获取当前进程的页目录，申请一页内核内存，把当前进程的页目录拷贝到新申请的这页内存中。 这里拷贝只拷贝了页目录，因此拷贝完后页目录中的内容是不变的， 也就是前8M依然映射到了前8M。
 
 page_error_code_t结构是缺页异常号每位代表的信息。page_fault函数是用于处理缺页异常的。如果引发了缺页异常且异常地址位于用户态的栈空间范围内，就进行内存映射。
 

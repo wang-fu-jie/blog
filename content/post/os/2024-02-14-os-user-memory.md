@@ -19,16 +19,16 @@ categories:  [ "操作系统" ]
 #define DESC_COUNT 7
 typedef list_node_t block_t; // 内存块
 
-typedef struct arena_descriptor_t    // 内存块儿描述符
+typedef struct arena_descriptor_t    // 内存块儿描述符，描述块的规格
 {
     u32 total_block;  // 一页内存分成了多少块
     u32 block_size;   // 块大小
     list_t free_list; // 空闲列表
 } arena_descriptor_t;
 
-typedef struct arena_t   // 一页或多页内存
+typedef struct arena_t   // 描述一页或多页内存，真实的页
 {
-    arena_descriptor_t *desc; // 该 arena 的描述符
+    arena_descriptor_t *desc; // 该 arena 的描述符，表示该页被切分为哪种内存块
     u32 count;                // 当前剩余多少块 或 页数
     u32 large;                // 表示是不是超过 1024 字节
     u32 magic;                // 魔数
@@ -68,7 +68,7 @@ static arena_t *get_block_arena(block_t *block)
     return (arena_t *)((u32)block & 0xfffff000);
 }
 ```
-首先看arena_init函数，内存块最小为16字节，如果小于1申请的内存小于16字节，那就分配一个12字节的内存块。初始化内存块描述符数组，一共7个，下一个内存块大小是上一个的两倍, 最大的内存块是1024字节即1k。并且初始化空闲块链表。
+首先看arena_init函数，内存块最小为16字节，如果小于1申请的内存小于16字节，那就分配一个16字节的内存块。初始化内存块描述符数组，一共7个，下一个内存块大小是上一个的两倍, 最大的内存块是1024字节即1k。并且初始化空闲块链表。
 
 get_arena_block函数获取arena 第 idx 块内存指针。get_block_arena函数用于获取当前内存块对应的arena结构。注意这里每页内存只能被划分为固定大小的内存块。
 
@@ -110,7 +110,7 @@ void *kmalloc(size_t size)
         arena->large = false;
         arena->count = desc->total_block;  // count就是该页被分为了多少块，因为是刚申请下来的
         arena->magic = ONIX_MAGIC;
-        for (size_t i = 0; i < desc->total_block; i++)   // 新申请的快全部加入空闲链表
+        for (size_t i = 0; i < desc->total_block; i++)   // 新申请的块全部加入空闲链表
         {
             block = get_arena_block(arena, i);
             list_push(&arena->desc->free_list, block);
@@ -182,7 +182,7 @@ void test_thread()
 ## 二、用户内存映射
 前边文章中我们做了内核内存映射，指定了8M以前的位置给内存使用，8M开始往后的位置给用户使用。但是用户每个进程的可用物理内存区域都是不一样的，因此用户内存映射比内核内存映射更复杂。但是映射的原理基本是一致的。
 
-在内核内存映射中，我们将也目录放到了 0x1000 的位置，然后在 0x2000、0x3000防止了两个页表，共映射了8M的内存空间。在用户内存映射，需要进行适当的修改。首先定义了几个宏定义，指定了页目录的存放位置，用户栈顶地址和内核使用的内存大小。
+在内核内存映射中，我们将页目录放到了 0x1000 的位置，然后在 0x2000、0x3000放置了两个页表，共映射了8M的内存空间。在用户内存映射，需要进行适当的修改。首先定义了几个宏定义，指定了页目录的存放位置，用户栈顶地址和内核使用的内存大小。
 ```cpp
 #define KERNEL_MEMORY_SIZE 0x800000  // 内核占用的内存大小 8M, 以后可能还会修改
 #define USER_STACK_TOP 0x8000000     // 用户栈顶地址 128M
@@ -193,7 +193,7 @@ static u32 KERNEL_PAGE_TABLE[] = {   // 内核页表索引
     0x3000,
 };
 ```
-这里把用户栈顶地址定义在了128M的位置，是因为我们自制的操作系统最多能使用128M的内存空间。这样是为了实现上更方便。在实现方便，修改了get_pte函数。因为我们要映射用户的内存，0x2000和0x3000映射了前8M内核内存，因此用户内存就需要往后找，此时有可能页表是不存在的，因此需要做一些处理，。如下：
+这里把用户栈顶地址定义在了128M的位置，是因为我们自制的操作系统最多能使用128M的内存空间。这样是为了实现上更方便。修改了get_pte函数。因为我们要映射用户的内存，0x2000和0x3000映射了前8M内核内存，因此用户内存就需要往后找，此时有可能页表是不存在的，因此需要做一些处理，。如下：
 ```cpp
 static page_entry_t *get_pte(u32 vaddr, bool create)  // 获取虚拟地址 vaddr 对应的页表
 {
@@ -216,7 +216,7 @@ static page_entry_t *get_pte(u32 vaddr, bool create)  // 获取虚拟地址 vadd
 这里的create参数就代表是否存在。如果不存在就创建。
 
 ### 2.1、映射物理内存
-以下两盒函数实现将虚拟地址映射为物理内存和解除虚拟地址映射的物理内存。
+以下两个函数实现将虚拟地址映射为物理内存和解除虚拟地址映射的物理内存。
 ```cpp
 void link_page(u32 vaddr)
 {
@@ -260,10 +260,8 @@ void unlink_page(u32 vaddr)   // 去掉 vaddr 对应的物理内存映射
     bitmap_set(map, index, false);
     u32 paddr = PAGE(entry->index);
     DEBUGK("UNLINK from 0x%p to 0x%p\n", vaddr, paddr);
-    if (memory_map[entry->index] == 1)   // 判断物理内存是否被多次引用
-    {
-        put_page(paddr);
-    }
+   
+    put_page(paddr); // 函数内部做了判断物理内存是否被多次引用
     flush_tlb(vaddr);
 }
 ```
@@ -278,19 +276,30 @@ void task_to_user_mode(target_t target)
 
     task->vmap = kmalloc(sizeof(bitmap_t)); // todo kfree
     void *buf = (void *)alloc_kpage(1);     // todo free_kpage
-    bitmap_init(task->vmap, buf, PAGE_SIZE, KERNEL_MEMORY_SIZE / PAGE_SIZE);
+    // 位图开始的位置是8M后的位置，也就是为位图的第一位标记的是8M的页
+    bitmap_init(task->vmap, buf, PAGE_SIZE, KERNEL_MEMORY_SIZE / PAGE_SIZE); 
     ......
 }
 ```
 
 ## 四、用户内存映射测试
-用户内存映射的测试主要是测试unlink_page 和 link_page这两个函数，这两个函数需要再用户态测试，但是这两个函数又需要再内核态调用。因此测试需要通过系统调用来实现，我们这里修改test系统调用来实现测试。即在 sys_test 中调用这两个函数。在user_init_thread中直接调用test系统调用即可完成测试。
+用户内存映射的测试主要是测试unlink_page 和 link_page这两个函数，这两个函数需要在用户态测试，但是这两个函数又需要再内核态调用。因此测试需要通过系统调用来实现，我们这里修改test系统调用来实现测试。即在 sys_test 中调用这两个函数。在user_init_thread中直接调用test系统调用即可完成测试。
 ![图片加载失败](/post_images/os/{{< filename >}}/4-01.png)
 如图所示：在执行完link_page后，先申请了一页内存作为页表，然后申请了一页物理内存作为页框映射到了 0x1600000 的虚拟内存地址。注意：这里unlink_page只释放了映射，但是没有释放页表，因为必要性不太大。
 
 最后理一下 0x1600000 是如何映射到物理地址的。
 * 虚拟地址转换为二进制 0x01600000 = 0b 00000001 01100000 00000000 00000000
-* 页目录索引 PDI = 0x05（第 6 项），也就是二进制的前 10 位, 这里是在get_pte函数中设置的
-* 页表索引 PTI = 0x200（第 513 项）也就是二进制的中 10 位
-* 页内偏移 = 0x000
-因此通过这样的映射，就被映射到了 0x8001000的物理内存位置。
+* 页目录索引 PDI = 0x05（第 6 项），也就是二进制的前 10 位, 在get_pte函数中进行设置
+* 此时页目录第6项页表为空，申请一页物理内存作为页表，0x800000这页，因为8M之前在内核内存映射时已经全部标记占用了
+* 页表索引 PTI = 0x200（第 513 项）也就是二进制的中 10 位, 判断页表索引对应的页框是否存在，如果存在直接返回
+* 如果页框不存在，再申请一页物理内存，作为页框 0x8001000的内存位置
+* 设置用户态的虚拟内存位图的第0x1600位置为1， 标记0x1600000这个虚拟地址已经被使用
+
+因此通过这样的映射，就被映射到了 0x8001000的物理内存位置。接下来再看释放映射
+
+* 通过ublink_page释放 虚拟地址 0x01600000 的内存映射
+* 设置页表项对应的索引为0，即entry->present = false。
+* 设置用户态的虚拟内存位图的第0x1600位置为0， 标记0x1600000这个虚拟地址已经释放
+* 判断对应物理页0x801000的物理位置，是否还被引用，如果不被引用了，则释放物理页
+
+这里同一个物理页可能被多次引用，例如进程的fork，子进程和父进程内存是一致的，就是对同一个物理页的引用。这里没有释放页表，因为没有必要性。如果所有的页表都被连接也就4M的页表，一个页表最多可以连接1024个页，释放页表需要判断这个1024个页是否都没有连接，这是个耗时的操作。因此进程退出时释放页表就可以了。
