@@ -14,7 +14,8 @@ categories:  [ "操作系统" ]
 ---
 
 ## 一、系统调用brk
-brk系统调用的作用是修改堆内存的上限。我们的操作系统从8M ~ 128M 是用户进程的内存空间。我们会把进程的ELF文件映射到 8M 开始的位置， 有text段、data段、bss段。这些段结束后就是堆内存。堆内存使用了多少就需要使用brk来标记。brk系统调用时 malloc/free 函数的基础。
+brk系统调用的作用是修改堆内存的上限。我们的操作系统从8M ~ 128M 是用户进程的内存空间。我们会把进程的ELF文件映射到 8M 开始的位置， 有text段、data段、bss段。这些段结束后就是堆内存。堆内存使用了多少就需要使用brk来标记。brk系统调用时 malloc/free 函数的基础。内存分布如下所示：brk标注了堆内存使用的上界。
+![图片加载失败](/post_images/os/{{< filename >}}/1-01.png)
 
 当程序运行时，如果你使用了如 malloc 这样的内存分配函数，它最终可能会通过 brk 或 mmap 来向内核申请更多内存。而 brk 就是负责调节 堆的顶端位置 的系统调用。
 ```cpp
@@ -25,7 +26,7 @@ int32 sys_brk(void *addr)
     ASSERT_PAGE(brk);                         // 判断brk是否是页开始的位置
     task_t *task = running_task();
     assert(task->uid != KERNEL_USER);         // 判断是否是用户
-    assert(KERNEL_MEMORY_SIZE < brk < USER_STACK_BOTTOM);  // 判断brk是否是
+    assert(KERNEL_MEMORY_SIZE < brk < USER_STACK_BOTTOM);  // 判断brk是否属于用户内存空间
     u32 old_brk = task->brk;   // 获取进程当前的堆内存边界
 
     if (old_brk > brk)   // 如果当前边界大于新申请的边界，那就释放内存映射
@@ -187,11 +188,11 @@ static void user_init_thread()
         pid_t pid = fork();
         if (pid)
         {
-            printf("fork after parent %d, %d, %d\n", pid, getpid(), getppid());
+            printf("fork after parent %d, %d, %d\n", pid, getpid(), getppid()); // 这里是父进程的代码
         }
         else
         {
-            printf("fork after child %d, %d, %d\n", pid, getpid(), getppid());
+            printf("fork after child %d, %d, %d\n", pid, getpid(), getppid()); // 这里是子进程的代码
         }
         hang();
         sleep(100);
@@ -235,8 +236,9 @@ exit主要来进行内存的释放。将子进程的父进程赋值为自己的�
 waitpid用来获取子进程的退出状态，也就是帮子进程收尸。实现如下：
 ```cpp
 pid_t task_waitpid(pid_t pid, int32 *status)
+// pid如果传入-1表示等待任意子进程
 {
-    task_t *task = running_task();
+    task_t *task = running_task();  // 获取当前进程
     task_t *child = NULL;
 
     while (true)
@@ -244,31 +246,31 @@ pid_t task_waitpid(pid_t pid, int32 *status)
         bool has_child = false;
         for (size_t i = 2; i < NR_TASKS; i++)
         {
-            task_t *ptr = task_table[i];
-            if (!ptr)
+            task_t *ptr = task_table[i]; 
+            if (!ptr)     // 空进程直接跳过
                 continue;
 
-            if (ptr->ppid != task->pid)
+            if (ptr->ppid != task->pid)  // 不是当前进程的子进程直接跳过
                 continue;
-            if (pid != ptr->pid && pid != -1)
+            if (pid != ptr->pid && pid != -1) // 如果调用者指定了特定 pid，且该 entry 不是它要等待的那个，跳过
                 continue;
 
-            if (ptr->state == TASK_DIED)
+            if (ptr->state == TASK_DIED)  // 判断子进程的状态是否是已经死亡
             {
                 child = ptr;
                 task_table[i] = NULL;
-                goto rollback;
+                goto rollback;   // 如果子进程已经死亡，跳转到rollback进行内核栈的内存释放
             }
 
-            has_child = true;
+            has_child = true; // 如果存在子进程且子进程没有死亡设置标记
         }
         if (has_child)
         {
-            task->waitpid = pid;
-            task_block(task, NULL, TASK_WAITING);
+            task->waitpid = pid;    // 设置当前进行的等待id为子进程的id
+            task_block(task, NULL, TASK_WAITING);  // 阻塞自身等待下次被唤醒，被唤醒后重新扫描 task_table 去找刚才可能已经变成 TASK_DIED 的子进程
             continue;
         }
-        break;
+        break;  // 如果当前进行没有子进程，结束循环。
     }
 
     // 没找到符合条件的子进程
@@ -281,7 +283,9 @@ rollback:
     return ret;
 }
 ```
-父进程进程waitpid系统调用，首先会检查是否有子进程，如果没有就返回-1。
+父进程进程waitpid系统调用，如果该函数传入了指定回收的进程，就会查找该进程id,如果没有就返回-1。如果没有传入指定回收的进行，那父进程会扫描自身所有子进程，如果有子进程已经死亡就进行回收并退出，如果所有子进程都还活着。会走到阻塞等待。这样保证父进程不会忙等，而是睡眠等待其中一个子进程退出。被唤醒后，会继续重新扫描，找到第一个 TASK_DIED 的子进程并返回。
+
+watipid 一次只会处理一个已经退出的子进程（第一个找到的），其他的要通过再次调用 waitpid() 处理.
 
 
 ## 六、系统调用time
