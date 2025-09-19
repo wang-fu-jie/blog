@@ -45,7 +45,7 @@ IDE（Integrated Drive Electronics） 是一种老式硬盘接口协议，也叫
 
 同步PIO在读写硬盘过程中，发起读写请求后，需要原地等待磁盘数据准备完毕，因此性能比较低。
 
-## 二、磁盘异PIO
+## 二、磁盘异步PIO
 同步状态监测会消耗大量CPU资源，所以可以使用异步方式等待硬盘驱动器。发完读写命令后进程可以进入阻塞态，当驱动器完成一个扇区的操作 (读/写) 时，会发送中断，可以在中断中恢复进程到就绪态，继续执行。
 ```cpp
 int ide_pio_read(ide_disk_t *disk, void *buf, u8 count, idx_t lba)
@@ -101,19 +101,19 @@ PC最多支持四个IDE硬盘，因此我们需要识别哪些挂了硬盘。目
 static u32 ide_identify(ide_disk_t *disk, u16 *buf)
 {
     LOGK("identifing disk %s...\n", disk->name);
-    lock_acquire(&disk->ctrl->lock);
-    ide_select_drive(disk);
-    outb(disk->ctrl->iobase + IDE_COMMAND, IDE_CMD_IDENTIFY);
+    lock_acquire(&disk->ctrl->lock);   // 加锁
+    ide_select_drive(disk);        // 选择磁盘
+    outb(disk->ctrl->iobase + IDE_COMMAND, IDE_CMD_IDENTIFY);  // 向磁盘发生识别命令0xEC，此时磁盘回准备512字节的磁盘信息数据
     ide_busy_wait(disk->ctrl, IDE_SR_NULL);
-    ide_params_t *params = (ide_params_t *)buf;
-    ide_pio_read_sector(disk, buf);
+    ide_params_t *params = (ide_params_t *)buf;    // 磁盘信息的数据结构，我们一般只关注total lba
+    ide_pio_read_sector(disk, buf);       // 读取一个扇区到buf中
     LOGK("disk %s total lba %d\n", disk->name, params->total_lba);
     u32 ret = EOF;
     if (params->total_lba == 0)
     {
         goto rollback;
     }
-    ide_swap_pairs(params->serial, sizeof(params->serial));
+    ide_swap_pairs(params->serial, sizeof(params->serial));    // 以下为一些打印信息
     LOGK("disk %s serial number %s\n", disk->name, params->serial);
     ide_swap_pairs(params->firmware, sizeof(params->firmware));
     LOGK("disk %s firmware version %s\n", disk->name, params->firmware);
@@ -130,7 +130,8 @@ rollback:
     return ret;
 }
 ```
-如上为识别硬盘的代码，通过IDENTIFY命令，使用IDENTIFY命令也是向指定发生发生指令。就会获取到是否有硬盘以及硬盘的大小等信息。BIOS通过IDENTIFY来识别硬盘。
+如上为识别硬盘的代码，通过IDENTIFY命令，使用IDENTIFY命令也是向指定发生指令。就会获取到是否有硬盘以及硬盘的大小等信息。BIOS通过IDENTIFY来识别硬盘。这里会分别去识别4块硬盘是否存在，如果totle_lba为0，则认为硬盘不存在。效果如下：
+![图片加载失败](/post_images/os/{{< filename >}}/3-01.png)
 
 ## 四、硬盘分区
 为了实现多个操作系统共享硬盘资源，硬盘可以在逻辑上分为 4 个主分区。每个分区之间的扇区号是邻接的。分区表由 4 个表项组成，每个表项由 16 字节组成，对应一个分区的信息，存放有分区的大小和起止的柱面号、磁道号和扇区号。磁盘分区存储在主引导扇区的64个字节中，即 0 柱面 0 头第 1 个扇区的 0x1BE ~ 0x1FD 处。
@@ -154,7 +155,7 @@ sudo losetup -d /dev/loop0   # 取消挂载
 做完分区后，就可以在我们的操作系统中来读取分区了。
 ```cpp
 #define IDE_PART_NR 4 // 每个磁盘分区数量，只支持主分区，总共 4 个
-typedef struct part_entry_t
+typedef struct part_entry_t   // 这是主引导扇区内的16个字节信息
 {
     u8 bootable;             // 引导标志
     u8 start_head;           // 分区起始磁头号
@@ -168,14 +169,14 @@ typedef struct part_entry_t
     u32 count;               // 分区占用的扇区数
 } _packed part_entry_t;
 
-typedef struct boot_sector_t   // 主引导扇区
+typedef struct boot_sector_t   // 主引导扇区结构
 {
-    u8 code[446];
-    part_entry_t entry[4];
-    u16 signature;
+    u8 code[446];    // 446个字节的代码
+    part_entry_t entry[4];  // 4个分区信息
+    u16 signature;   // 2个字节的校验位 0x55aa
 } _packed boot_sector_t;
 
-typedef struct ide_part_t
+typedef struct ide_part_t    // 我们的系统使用的分区信息
 {
     char name[8];            // 分区名称
     struct ide_disk_t *disk; // 磁盘指针
@@ -183,6 +184,16 @@ typedef struct ide_part_t
     u32 start;               // 分区起始物理扇区号 LBA
     u32 count;               // 分区占用的扇区数
 } ide_part_t;
+
+// 分区文件系统， 以下是一些常用的分区类型
+// 参考 https://www.win.tue.nl/~aeb/partitions/partition_types-1.html
+typedef enum PART_FS
+{
+    PART_FS_FAT12 = 1,    // FAT12
+    PART_FS_EXTENDED = 5, // 扩展分区
+    PART_FS_MINIX = 0x80, // minux
+    PART_FS_LINUX = 0x83, // linux
+} PART_FS;
 
 // 读分区
 int ide_pio_part_read(ide_part_t *part, void *buf, u8 count, idx_t lba)
@@ -195,8 +206,58 @@ int ide_pio_part_write(ide_part_t *part, void *buf, u8 count, idx_t lba)
 {
     return ide_pio_write(part->disk, buf, count, part->start + lba);
 }
+
+// 分区初始化
+static void ide_part_init(ide_disk_t *disk, u16 *buf)
+{
+    if (!disk->total_lba) // total_lba为0 ，说明磁盘不可用
+        return;
+    ide_pio_read(disk, buf, 1, 0);  // 读取主引导扇区
+    boot_sector_t *boot = (boot_sector_t *)buf;   // 初始化主引导扇区
+
+    for (size_t i = 0; i < IDE_PART_NR; i++)  // 分别读取主引导扇区中的4个主分区信息
+    {
+        part_entry_t *entry = &boot->entry[i];  
+        ide_part_t *part = &disk->parts[i];
+        if (!entry->count)      // 如果分区的扇区数量为0，直接跳过
+            continue;
+
+        sprintf(part->name, "%s%d", disk->name, i + 1);  // 以下打印分区信息，并设置分区的结构体
+
+        LOGK("part %s \n", part->name);
+        LOGK("    bootable %d\n", entry->bootable);
+        LOGK("    start %d\n", entry->start);
+        LOGK("    count %d\n", entry->count);
+        LOGK("    system 0x%x\n", entry->system);
+
+        part->disk = disk;
+        part->count = entry->count;
+        part->system = entry->system;
+        part->start = entry->start;
+
+        if (entry->system == PART_FS_EXTENDED)   // 如果是扩展分区直接报错，我们的系统不支持
+        {
+            LOGK("Unsupported extended partition!!!\n");
+
+            boot_sector_t *eboot = (boot_sector_t *)(buf + SECTOR_SIZE); // 读取一下扩展分区的内容
+            ide_pio_read(disk, (void *)eboot, 1, entry->start);
+
+            for (size_t j = 0; j < IDE_PART_NR; j++)
+            {
+                part_entry_t *eentry = &eboot->entry[j];
+                if (!eentry->count)
+                    continue;
+                LOGK("part %d extend %d\n", i, j);
+                LOGK("    bootable %d\n", eentry->bootable);
+                LOGK("    start %d\n", eentry->start);
+                LOGK("    count %d\n", eentry->count);
+                LOGK("    system 0x%x\n", eentry->system);
+            }
+        }
+    }
+}
 ```
-读取完分区后还需要对分区进行初始化。
+在做完硬盘识别后既可以进行分区的初始化。在分区初始化中，我们就可以读取到分区信息。其中第一个分区开始的位置是2048扇区，也就是从1M的位置开始进行分区。这1M的保留空间用来被用于重要的系统结构和兼容性目的，可以存储额外的引导程序，这里不做过多介绍。
 
 ## 五、虚拟设备
 虚拟设备是对硬件设备进行一层抽象，使得读写更加的统一，方便以后的操作。
@@ -205,8 +266,8 @@ int ide_pio_part_write(ide_part_t *part, void *buf, u8 count, idx_t lba)
 enum device_type_t  // 设备类型
 {
     DEV_NULL,  // 空设备
-    DEV_CHAR,  // 字符设备
-    DEV_BLOCK, // 块设备
+    DEV_CHAR,  // 字符设备 以char为单位进行读写，如键盘、控制台
+    DEV_BLOCK, // 块设备 以块为单位进行读写，如磁盘以扇区为单位读写
 };
 
 enum device_subtype_t  // 设备子类型
@@ -240,26 +301,68 @@ int device_ioctl(dev_t dev, int cmd, void *args, int flags);   // 控制设备
 int device_read(dev_t dev, void *buf, size_t count, idx_t idx, int flags);  // 读设备
 int device_write(dev_t dev, void *buf, size_t count, idx_t idx, int flags);  // 写设备
 ```
-首先需要对设备进行初始化，即将64个设备结构数组全设置为空。安装设备从数组中获取一个空设备进行结构的赋值。因为控制台和键盘都属于设备，因此控制台的操作需要同步进行调整，例如console_write函数。
+首先需要对设备进行初始化，即将64个设备结构数组全设置为空。安装设备从数组中获取一个空设备进行结构体的赋值。获取空设备时从1开始，数组0号就放空设备。因为控制台和键盘都属于字符设备，因此控制台的操作需要同步进行调整，例如console_write函数。这样就可以把控制台和键盘进行设备管理：
+```cpp
+void console_init()
+{
+    console_clear();
+    device_install(
+        DEV_CHAR, DEV_CONSOLE,
+        NULL, "console", 0,
+        NULL, NULL, console_write);
+}
+
+static u32 sys_test()
+{
+    char ch;
+    device_t *device;
+
+    device = device_find(DEV_KEYBOARD, 0);
+    assert(device);
+    device_read(device->dev, &ch, 1, 0, 0);
+
+    device = device_find(DEV_CONSOLE, 0);
+    assert(device);
+    device_write(device->dev, &ch, 1, 0, 0);
+    return 255;
+}
+```
+如上所示，我们在初始化控制台时，就可以把控制台安装到虚拟设备中。同样的键盘初始化也安装到虚拟设备，在0号系统调用就可以测试通过虚拟设备进行读写。
 
 
 ## 六、块设备请求
 块设备 (如硬盘，软盘) 的读写以扇区(512B) 为单位，操作比较耗时，需要寻道，寻道时需要旋转磁头臂。所以需要一种策略来完成磁盘的访问。这个策略就是电梯算法，我们在下一篇文章再详细说明。
 ```cpp
+// 执行块设备请求
+static void do_request(request_t *req)
+{
+    switch (req->type)
+    {
+    case REQ_READ:
+        device_read(req->dev, req->buf, req->count, req->idx, req->flags);
+        break;
+    case REQ_WRITE:
+        device_write(req->dev, req->buf, req->count, req->idx, req->flags);
+        break;
+    default:
+        panic("req type %d unknown!!!");
+        break;
+    }
+}
+
 // 块设备请求
 void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 type)
 {
     device_t *device = device_get(dev);
     assert(device->type = DEV_BLOCK); // 是块设备
-    idx_t offset = idx + device_ioctl(device->dev, DEV_CMD_SECTOR_START, 0, 0);
+    idx_t offset = idx + device_ioctl(device->dev, DEV_CMD_SECTOR_START, 0, 0); // 获取到磁盘扇区的位置
 
-    if (device->parent)
+    if (device->parent)  // 有父设备，例如分区的话就找到分区的磁盘，对磁盘操作
     {
         device = device_get(device->parent);
     }
 
-    request_t *req = kmalloc(sizeof(request_t));
-
+    request_t *req = kmalloc(sizeof(request_t));  // 申请内存存放请求参数
     req->dev = dev;
     req->buf = buf;
     req->count = count;
@@ -274,14 +377,14 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     // 将请求压入链表
     list_push(&device->request_list, &req->node);
 
-    // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成；
+    // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成； 这块是压入前判断的是否为空
     if (!empty)
     {
         req->task = running_task();
         task_block(req->task, NULL, TASK_BLOCKED);
     }
 
-    do_request(req);
+    do_request(req);  // 执行请求
 
     list_remove(&req->node);
     kfree(req);
@@ -294,5 +397,20 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
         task_unblock(nextreq->task);
     }
 }
+
+static u32 sys_test()
+{
+    char ch;
+    device_t *device;
+
+    void *buf = (void *)alloc_kpage(1);
+    device = device_find(DEV_IDE_PART, 0);  // 查找第一个磁盘分区
+    assert(device);
+    memset(buf, running_task()->pid, 512); // 设置buf为进程id
+    device_request(device->dev, buf, 1, running_task()->pid, 0, REQ_WRITE);  // 将进程id写入磁盘
+    free_kpage((u32)buf, 1);
+
+    return 255;
+}
 ```
-如上为块设备请求的实现，磁盘就属于块设备。
+如上为块设备请求的实现，磁盘就属于块设备。这里我们把磁盘和磁盘分区作为子设备类型安装到虚拟设备， 这里在磁盘初始化时进程完成。我们依然在0号系统调用进行测试，然后开启三个现成来调用test。
