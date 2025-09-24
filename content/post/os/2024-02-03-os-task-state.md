@@ -3,7 +3,7 @@ title:       自制操作系统 - 任务状态
 subtitle:    "任务状态"
 description: "任务处理就绪态和运行态之外，还有阻塞态和休眠态。本文中将实现任务进入阻塞态和休眠态的实现，详细介绍进入阻塞和解除阻塞已经休眠和唤醒。进入阻塞和休眠的任务分别使用双向链表进行管理。"
 excerpt:     "任务处理就绪态和运行态之外，还有阻塞态和休眠态。本文中将实现任务进入阻塞态和休眠态的实现，详细介绍进入阻塞和解除阻塞已经休眠和唤醒。进入阻塞和休眠的任务分别使用双向链表进行管理。"
-date:        2024-02-02T18:30:38+08:00
+date:        2024-02-03T18:30:38+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/9e/f7/architect_graphics_abstract_building_secret_success_quality-1057487.jpg!d"
 published:   true
@@ -16,8 +16,14 @@ categories:  [ "操作系统" ]
 ## 一、双向链表
 任务的实现需要依赖双向链表这个数据结构，链表相信大家都很熟悉，不进行过多介绍，这里说明一下内核使用的链表和普通链表的不同之处。先看下基本定义：
 ```cpp
+// 获取类型type的成员的偏移
 #define element_offset(type, member) (u32)(&((type *)0)->member)
+// 根据类型type成员的偏移地址获取到这个结构体的地址
 #define element_entry(type, member, ptr) (type *)((u32)ptr - element_offset(type, member))
+// 在 type 结构内，计算key 成员相对于 node 成员的字节偏移差
+#define element_node_offset(type, node, key) ((int)(&((type *)0)->key) - (int)(&((type *)0)->node))
+// node 是指向 type 中 node 成员的指针，offset 是 element_node_offset(type, node, key) 得到的差值，则 (int)node + offset 把 node 指针转为 int 类型的地址，加上偏移，得到 key 成员的地址的整数形式，转回 int*，解引用得到 key（
+#define element_node_key(node, offset) *(int *)((int)node + offset)
 
 typedef struct list_node_t   // 链表结点
 {
@@ -30,10 +36,33 @@ typedef struct list_t      // 链表
     list_node_t head; // 头结点
     list_node_t tail; // 尾结点
 } list_t;
+
+// 链表插入排序
+void list_insert_sort(list_t *list, list_node_t *node, int offset)  // offset是key相对于node的偏移量
+{
+    // 从链表找到第一个比当前节点 key 点更大的节点，进行插入到前面
+    list_node_t *anchor = &list->tail;  // 获取尾地址
+    int key = element_node_key(node, offset);     // 读取node的
+    for (list_node_t *ptr = list->head.next; ptr != &list->tail; ptr = ptr->next)
+    {
+        int compare = element_node_key(ptr, offset);
+        if (compare > key)
+        {
+            anchor = ptr;
+            break;
+        }
+    }
+
+    assert(node->next == NULL);
+    assert(node->prev == NULL);
+
+    // 插入链表
+    list_insert_before(anchor, node);
+}
 ```
 注意这是的链表节点只有前后节点的两个指针，并没有数据。这是因为可能把一个数据块链接到不同的链表中。因此这是采用将node嵌入到数据区中，这样数据就可以链接到多个链表中。这里还有两个宏，它的作用是通过node的指针找到链表的指针。
 
-其中 element_offset 计算结构体类型 type 中，成员 member 相对于结构体起始地址的字节偏移量。element_entry 通过一个指向结构体成员 (member) 的指针 ptr，求出这个成员所在的那个完整结构体的起始地址
+其中 element_offset 计算结构体类型 type 中，成员 member 相对于结构体起始地址的字节偏移量。element_entry 通过一个指向结构体成员 (member) 的指针 ptr，求出这个成员所在的那个完整结构体的起始地址。这里实现了一个插入排序，按照key元素进行大小的比较。
 
 ## 二、任务的阻塞和就绪
 为了保存阻塞的任务，在task的结构体中加入一个链表。如果任务被阻塞了就将任务压入链表中。我们这里为了测试，将0号系统调用改为阻塞和解除阻塞。如代码：调用test()函数即可调用0号系统调用。
