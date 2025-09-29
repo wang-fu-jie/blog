@@ -133,7 +133,7 @@ typedef struct buffer_t
 static list_t hash_table[HASH_COUNT]; // 缓存哈希表
 u32 hash(dev_t dev, idx_t block)
 {
-    return (dev ^ block) & HASH_COUNT;
+    return (dev ^ block) % HASH_COUNT;
 }
 static buffer_t *get_from_hash_table(dev_t dev, idx_t block)  // 从哈希表中找指定设备的块儿
 {
@@ -325,5 +325,9 @@ void buffer_init()
     }
 }
 ```
-如上为高速缓冲的实现，依然可以在0号系统调用进行测试。通过高速缓冲，可以提高磁盘的读写效率。
+如上为高速缓冲的实现，依然可以在0号系统调用进行测试。通过高速缓冲，可以提高磁盘的读写效率。最后我们梳理一下缓冲的过程：
+1. 需求读取磁盘的某块，首先去hash表中查找我们要读取的块是否存在， 如果找到就直接使用。
+2. 如果没有找到就去缓冲内存中查看是否还有空闲的内存空间，有的话就申请一块儿。
+3. 如果缓冲内存耗尽就去空闲链表中找一个块儿。（被释放的缓存会加入到空闲链表）
+4. 如果一块被释放过了，再次被使用，那它在空闲链表和hash表中都有，就直接返回不需要再读硬盘了。
 
