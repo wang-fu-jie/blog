@@ -27,7 +27,7 @@ sudo mkfs.minix -1 -n 14 /dev/loop0p1
 ## 2.1、块的概念
 文件系统把硬件分成了许多块。一块是两个扇区。如下所示：
 ![图片加载失败](/post_images/os/{{< filename >}}/2.1-01.png)
-文件就存储在这些块内，文件系统有很多文件，因此需要记录每个文件存在于哪些块中。当一个文件使用多个块时，就需要对这些块进行管理。时因此产生了两种管理块的方案，第一个是文件分配表，它的逻辑是每一块最后有一个指针指向下一块。第二个是索引表，使用一个inode结构指示下一个块的记录的位置。
+文件就存储在这些块内，文件系统有很多文件，因此需要记录每个文件存在于哪些块中。当一个文件使用多个块时，就需要对这些块进行管理。因此产生了两种管理块的方案，第一个是文件分配表，它的逻辑是每一块最后有一个指针指向下一块。第二个是索引表，使用一个inode结构指示下一个块的记录的位置。
 
 ## 2.2、inode
 inode用于记录一个文件存在于哪些块中，它的结构如下：
@@ -50,13 +50,13 @@ typedef struct inode_desc_t
 inode本身也存在于文件系统中，因此需要一些块来存储inode信息。因此文件系统需要分为两部分，一部分存储文件，一部分存储inode。因此需要用到一个超级块，来记录一个文件系统有多少inode块，多少文件块。
 
 ### 2.3、超级块
-超级块用到记录一个文件系统，有多少个inode和逻辑块，它的结构如下：
+超级块用来记录一个文件系统，有多少个inode和逻辑块，它的结构如下：
 ```cpp
 typedef struct super_desc_t
 {
     u16 inodes;        // 节点数
     u16 zones;         // 逻辑块数
-    u16 imap_blocks;   // i 节点位图所占用的数据块数
+    u16 imap_blocks;   // inode 节点位图所占用的数据块数
     u16 zmap_blocks;   // 逻辑块位图所占用的数据块数
     u16 firstdatazone; // 第一个数据逻辑块号
     u16 log_zone_size; // log2(每逻辑块数据块数)
@@ -78,7 +78,7 @@ typedef struct dentry_t
 } dentry_t;
 ```
 
-### 三、文件系统的实现
+## 三、文件系统的实现
 我们这里使用代码来实现一下文件系统的读写，代码如下：
 ```cpp
 void super_init()
@@ -132,6 +132,8 @@ sed -i 's/loop0p1/loop100p1/g; s/loop1/loop101/g; s/loop0/loop100/g; s/${USER}/r
 
 
 ## 四、根超级块
+我们先说一下超级块和根超级块，每个分区如果被格式化成某种文件系统，那么它就会在分区里写入一个 超级块，以：每个分区都有自己的超级块。根超级块是内存里的概念，当操作系统挂载一个文件系统时，会把该分区的超级块从磁盘读出来，加载到内存中，形成一个内核的 super_block 数据结构。例如分区 1 上有 minix 的超级块 → 内存里变成 / 的根超级块。
+
 创建超级块表，以及读取根超级块；这里使用已经创建好的文件系统，后续再自行实现文件系统的格式化等操作。我们这里首先添加两个结构，分为是inode和超级块在内存中的结构，上文中的结构是在磁盘上的结构：
 ```cpp
 typedef struct inode_t   // inode在内存中的结构
@@ -150,7 +152,7 @@ typedef struct inode_t   // inode在内存中的结构
 typedef struct super_block_t   // 超级块在内存中的结构
 {
     super_desc_t *desc;              // 超级块描述符
-    struct buffer_t *buf;            // 超级快描述符 buffer
+    struct buffer_t *buf;            // 超级块描述符 buffer
     struct buffer_t *imaps[IMAP_NR]; // inode 位图缓冲
     struct buffer_t *zmaps[ZMAP_NR]; // 块位图缓冲
     dev_t dev;                       // 设备号
