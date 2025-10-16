@@ -65,14 +65,11 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     device_t *device = device_get(dev);
     assert(device->type = DEV_BLOCK); // 是块设备
     idx_t offset = idx + device_ioctl(device->dev, DEV_CMD_SECTOR_START, 0, 0);
-
     if (device->parent)
     {
         device = device_get(device->parent);
     }
-
     request_t *req = kmalloc(sizeof(request_t));
-
     req->dev = dev;
     req->buf = buf;
     req->count = count;
@@ -80,16 +77,11 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     req->flags = flags;
     req->type = type;
     req->task = NULL;
-
     LOGK("dev %d request idx %d\n", req->dev, req->idx);
 
-    // 判断列表是否为空
-    bool empty = list_empty(&device->request_list);
-
-    // 将请求插入链表
-    list_insert_sort(&device->request_list, &req->node, element_node_offset(request_t, node, idx));
-    // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成；
-    if (!empty)
+    bool empty = list_empty(&device->request_list);  // 判断列表是否为空
+    list_insert_sort(&device->request_list, &req->node, element_node_offset(request_t, node, idx));  // 将请求插入链表
+    if (!empty)   // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成；
     {
         req->task = running_task();
         task_block(req->task, NULL, TASK_BLOCKED);
@@ -99,7 +91,6 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     request_t *nextreq = request_nextreq(device, req);
     list_remove(&req->node);
     kfree(req);
-
     if (nextreq)
     {
         assert(nextreq->task->magic == ONIX_MAGIC);
@@ -121,7 +112,7 @@ typedef struct buffer_t
     char *data;        // 数据区
     dev_t dev;         // 设备号
     idx_t block;       // 块号
-    int count;         // 引用计数
+    int count;         // 引用计数， 表示有多少使用者在使用这个buffer
     list_node_t hnode; // 哈希表拉链节点 查找用途（哈希表链表，快速定位某个 (dev, block) 的 buffer）
     list_node_t rnode; // 缓冲节点  管理用途（替换/遍历链表，方便调度和释放）
     lock_t lock;       // 锁
@@ -188,7 +179,7 @@ static void hash_remove(buffer_t *bf)  // 将 bf 从哈希表中移除
 
 高速缓冲需要用到内存区域，我们调整使用8M~12M的内存区域作为高速缓冲。也就是磁盘读出的扇区会存储到这个位置，这样对扇区的多次读写就可以在内存中进行，最后只需要一次刷回磁盘。
 
-接下来看告诉缓存的实现，这里内核的内存需要改为16M，因为高速缓存需要使用4M，另外4M预留给虚拟磁盘。这样需要再调整下内存布局，如下：
+接下来看高速缓存的实现，这里内核的内存需要改为16M，因为高速缓存需要使用4M，另外4M预留给虚拟磁盘。这样需要再调整下内存布局，如下：
 ![图片加载失败](/post_images/os/{{< filename >}}/3-01.png)
 
 高速缓冲的布局是有buffer_t结构，指向一块儿数据区，如下所示：
@@ -285,18 +276,17 @@ void bwrite(buffer_t *bf)  // 写缓冲
     bf->valid = true;
 }
 
-// 释放缓冲
-void brelse(buffer_t *bf)
+void brelse(buffer_t *bf)  // 释放缓冲
 {
     if (!bf)
         return;
-    bf->count--;
+    bf->count--;  // 引用计数减去1
     assert(bf->count >= 0);
-    if (!bf->count)
+    if (!bf->count)   // 如果引用计数为0，那说明无人使用，可以做空闲处理
     {
-        if (bf->rnode.next)
+        if (bf->rnode.next)  // 检查 bf->rnode 是否已经在某个链表上, 避免对未链接节点调用 list_remove
         {
-            list_remove(&bf->rnode);
+            list_remove(&bf->rnode);  // 把该节点从链表中移除
         }
 
         list_push(&free_list, &bf->rnode);   // 将释放的缓冲加入到空闲链表
@@ -305,9 +295,9 @@ void brelse(buffer_t *bf)
     {
         bwrite(bf); // todo need write?
     }
-    if (!list_empty(&wait_list))
+    if (!list_empty(&wait_list))   // 检查是否有任务在 wait_list 上等待（通常是等待空闲 buffer 的任务队列）
     {
-        task_t *task = element_entry(task_t, node, list_popback(&wait_list));
+        task_t *task = element_entry(task_t, node, list_popback(&wait_list));  // 将该任务从阻塞状态唤醒/置为可运行
         task_unblock(task);
     }
 }

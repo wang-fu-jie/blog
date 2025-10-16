@@ -24,24 +24,30 @@ PIO(Programmed Input/Output) 编程输入输出，PIO 模式使用了大量的 C
 #define IDE_CTRL_NR 2 // 控制器数量，固定为 2
 #define IDE_DISK_NR 2 // 每个控制器可挂磁盘数量，固定为 2
 
-typedef struct ide_disk_t  // IDE 磁盘
+typedef struct ide_disk_t    // IDE 磁盘
 {
     char name[8];            // 磁盘名称
     struct ide_ctrl_t *ctrl; // 控制器指针
     u8 selector;             // 磁盘选择
     bool master;             // 主盘
+    u32 total_lba;           // 可用扇区数量
+    u32 cylinders;           // 柱面数
+    u32 heads;               // 磁头数
+    u32 sectors;             // 扇区数
 } ide_disk_t;
 
-typedef struct ide_ctrl_t   // IDE 控制器
+typedef struct ide_ctrl_t          // IDE 控制器
 {
     char name[8];                  // 控制器名称
     lock_t lock;                   // 控制器锁
     u16 iobase;                    // IO 寄存器基址
     ide_disk_t disks[IDE_DISK_NR]; // 磁盘
     ide_disk_t *active;            // 当前选择的磁盘
+    u8 control;                    // 控制字节
+    struct task_t *waiter;         // 等待控制器的进程
 } ide_ctrl_t;
 ```
-IDE（Integrated Drive Electronics） 是一种老式硬盘接口协议，也叫 ATA。传统 PC 架构中，一个系统默认最多支持 两个 IDE 控制器（Primary 和 Secondary），每个控制器可以挂接 最多 2 块磁盘（一块主盘 master，一块从盘 slave）。接下来就是控制器的初始化和磁盘的读写，我们这里不在贴这部分代码，其中的原理通过汇编实现磁盘读写时已经展示过。
+IDE（Integrated Drive Electronics） 是一种老式硬盘接口协议，也叫 ATA。传统 PC 架构中，一个系统默认最多支持 两个 IDE 控制器（Primary 和 Secondary），每个控制器可以挂接 最多 2 块磁盘（一块主盘 master，一块从盘 slave）。接下来就是控制器的初始化和磁盘的读写，我们这里不再贴这部分代码，其中的原理通过汇编实现磁盘读写时已经展示过。
 
 同步PIO在读写硬盘过程中，发起读写请求后，需要原地等待磁盘数据准备完毕，因此性能比较低。
 
@@ -90,7 +96,7 @@ void ide_handler(int vector)
     }
 }
 ```
-如上所示，在读取硬盘时，发起读请求后当前进程主动进入阻塞态。当数据准备完成时，就会产生中断，中断函数为ide_handler。我们这里实现的是没读写一个扇区就产生一次中断，当然还可以实现读写多块，读写多个扇区产生一次中断，这比较复杂我们的系统不做实现。
+如上所示，在读取硬盘时，发起读请求后当前进程主动进入阻塞态。当数据准备完成时，就会产生中断，中断函数为ide_handler。我们这里实现的是每读写一个扇区就产生一次中断，当然还可以实现读写多块，读写多个扇区产生一次中断，这比较复杂我们的系统不做实现。
 
 注意这里在异步读写硬盘时不允许中断，因为有可能发起读请求后，数据很快准备完成了，就产生了中断进行中断处理，但此时trl->waiter为NULL，因此本次中断没起作用。然后我们的读硬盘继续向下执行自动主动阻塞，但是不会再有中断到来了，因此可能永远阻塞在这里。
 
@@ -130,11 +136,11 @@ rollback:
     return ret;
 }
 ```
-如上为识别硬盘的代码，通过IDENTIFY命令，使用IDENTIFY命令也是向指定发生指令。就会获取到是否有硬盘以及硬盘的大小等信息。BIOS通过IDENTIFY来识别硬盘。这里会分别去识别4块硬盘是否存在，如果totle_lba为0，则认为硬盘不存在。效果如下：
+如上为识别硬盘的代码，通过IDENTIFY命令，也就是发送指定指令。就会获取到是否有硬盘以及硬盘的大小等信息。BIOS通过IDENTIFY来识别硬盘。这里会分别去识别4块硬盘是否存在，如果totle_lba为0，则认为硬盘不存在。效果如下：
 ![图片加载失败](/post_images/os/{{< filename >}}/3-01.png)
 
 ## 四、硬盘分区
-为了实现多个操作系统共享硬盘资源，硬盘可以在逻辑上分为 4 个主分区。每个分区之间的扇区号是邻接的。分区表由 4 个表项组成，每个表项由 16 字节组成，对应一个分区的信息，存放有分区的大小和起止的柱面号、磁道号和扇区号。磁盘分区存储在主引导扇区的64个字节中，即 0 柱面 0 头第 1 个扇区的 0x1BE ~ 0x1FD 处。
+为了实现多个操作系统共享硬盘资源，硬盘可以在逻辑上分为 4 个主分区。每个分区之间的扇区号是邻接的。分区表由 4 个表项组成，每个表项由 16 字节组成，对应一个分区的信息，存放有分区的大小和起止的柱面号、磁道号和扇区号。磁盘分区存储在主引导扇区的64个字节中，即 0 柱面 0 磁头第 1 个扇区的 0x1BE ~ 0x1FD 处。
 ![图片加载失败](/post_images/os/{{< filename >}}/4-01.png)
 如图为每个主分区的存储信息，主要关注分区类型字节、分区起始位置和分区扇区数即可
 
@@ -223,13 +229,11 @@ static void ide_part_init(ide_disk_t *disk, u16 *buf)
             continue;
 
         sprintf(part->name, "%s%d", disk->name, i + 1);  // 以下打印分区信息，并设置分区的结构体
-
         LOGK("part %s \n", part->name);
         LOGK("    bootable %d\n", entry->bootable);
         LOGK("    start %d\n", entry->start);
         LOGK("    count %d\n", entry->count);
         LOGK("    system 0x%x\n", entry->system);
-
         part->disk = disk;
         part->count = entry->count;
         part->system = entry->system;
@@ -238,26 +242,11 @@ static void ide_part_init(ide_disk_t *disk, u16 *buf)
         if (entry->system == PART_FS_EXTENDED)   // 如果是扩展分区直接报错，我们的系统不支持
         {
             LOGK("Unsupported extended partition!!!\n");
-
-            boot_sector_t *eboot = (boot_sector_t *)(buf + SECTOR_SIZE); // 读取一下扩展分区的内容
-            ide_pio_read(disk, (void *)eboot, 1, entry->start);
-
-            for (size_t j = 0; j < IDE_PART_NR; j++)
-            {
-                part_entry_t *eentry = &eboot->entry[j];
-                if (!eentry->count)
-                    continue;
-                LOGK("part %d extend %d\n", i, j);
-                LOGK("    bootable %d\n", eentry->bootable);
-                LOGK("    start %d\n", eentry->start);
-                LOGK("    count %d\n", eentry->count);
-                LOGK("    system 0x%x\n", eentry->system);
-            }
         }
     }
 }
 ```
-在做完硬盘识别后既可以进行分区的初始化。在分区初始化中，我们就可以读取到分区信息。其中第一个分区开始的位置是2048扇区，也就是从1M的位置开始进行分区。这1M的保留空间用来被用于重要的系统结构和兼容性目的，可以存储额外的引导程序，这里不做过多介绍。
+在做完硬盘识别后就可以进行分区的初始化。在分区初始化中，我们就可以读取到分区信息。其中第一个分区开始的位置是2048扇区，也就是从1M的位置开始进行分区。这1M的保留空间用来被用于重要的系统结构和兼容性目的，可以存储额外的引导程序，这里不做过多介绍。
 
 ## 五、虚拟设备
 虚拟设备是对硬件设备进行一层抽象，使得读写更加的统一，方便以后的操作。
@@ -361,7 +350,6 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     {
         device = device_get(device->parent);
     }
-
     request_t *req = kmalloc(sizeof(request_t));  // 申请内存存放请求参数
     req->dev = dev;
     req->buf = buf;
@@ -371,21 +359,15 @@ void device_request(dev_t dev, void *buf, u8 count, idx_t idx, int flags, u32 ty
     req->type = type;
     req->task = NULL;
 
-    // 判断列表是否为空
-    bool empty = list_empty(&device->request_list);
-
-    // 将请求压入链表
-    list_push(&device->request_list, &req->node);
-
-    // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成； 这块是压入前判断的是否为空
-    if (!empty)
+    bool empty = list_empty(&device->request_list);  // 判断列表是否为空
+    list_push(&device->request_list, &req->node);    // 将请求压入链表
+    if (!empty)    // 如果列表不为空，则阻塞，因为已经有请求在处理了，等待处理完成； 这块是压入前判断的是否为空
     {
         req->task = running_task();
         task_block(req->task, NULL, TASK_BLOCKED);
     }
 
     do_request(req);  // 执行请求
-
     list_remove(&req->node);
     kfree(req);
 
@@ -409,7 +391,6 @@ static u32 sys_test()
     memset(buf, running_task()->pid, 512); // 设置buf为进程id
     device_request(device->dev, buf, 1, running_task()->pid, 0, REQ_WRITE);  // 将进程id写入磁盘
     free_kpage((u32)buf, 1);
-
     return 255;
 }
 ```
