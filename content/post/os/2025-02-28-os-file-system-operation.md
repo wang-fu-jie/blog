@@ -166,7 +166,21 @@ void iput(inode_t *inode)   // 释放 inode
     put_free_inode(inode);   // 释放 inode 内存
 }
 ```
-如上所示，为inode的管理，在内存中使用一个数组，最大管理64个inode。 
+如上所示，为inode的管理，在内存中使用一个数组，最大管理64个inode。 这是还有一个重点是根inode, 它永远inode表的第一个元素。因此在挂载根文件系统时应该初始化根文件目录。
+```cpp
+// 挂载根文件系统
+static void mount_root()
+{
+    LOGK("Mount root file system...\n");
+    device_t *device = device_find(DEV_IDE_PART, 0);  // 假设主硬盘第一个分区是根文件系统
+    assert(device);
+    root = read_super(device->dev);   // 读根文件系统超级块
+    // 初始化根目录 inode
+    root->iroot = iget(device->dev, 1);  // 获得根目录 inode
+    root->imount = iget(device->dev, 1); // 根目录挂载 inode
+}
+```
+这里的iroot和imount分别是进程所见的根目录（/）和件系统被挂载到的目录 inode。一般情况下，iroot 就是系统的全局根 inode。正常情况下：所有进程的 / 都指向系统根 inode。日常使用一般也不会使用chroot来修改进程所见的根目录。
 
 最后还有一个很重要的函数，获取 inode 指定块的索引值，我们还是结合代码来分析：
 ```cpp
@@ -239,8 +253,23 @@ reckon:
 #define IFCHR 0020000 // 字符设备文件
 #define IFIFO 0010000 // FIFO 特殊文件
 #define IFSYM 0120000 // 符号连接
+
+typedef struct stat_t
+{
+    dev_t dev;    // 含有文件的设备号
+    idx_t nr;     // 文件 i 节点号
+    u16 mode;     // 文件类型和属性
+    u8 nlinks;    // 指定文件的连接数
+    u16 uid;      // 文件的用户(标识)号
+    u8 gid;       // 文件的组号
+    dev_t rdev;   // 设备号(如果文件是特殊的字符文件或块文件)
+    size_t size;  // 文件大小（字节数）（如果文件是常规文件）
+    time_t atime; // 上次（最后）访问时间
+    time_t mtime; // 最后修改时间
+    time_t ctime; // 最后节点修改时间
+} stat_t;
 ```
-在这里高4为表示文件类型，这里罗列一些文件类型的宏定义，权限的宏定义就不再展开说明。
+在这里高4为表示文件类型，这里罗列一些文件类型的宏定义，权限的宏定义就不再展开说明。stat_t结构是用来描述文件状态，包含文件的属性等信息。
 
 
 ## 四、umask系统调用
