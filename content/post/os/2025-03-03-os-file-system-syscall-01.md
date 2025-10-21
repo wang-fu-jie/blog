@@ -153,7 +153,7 @@ int sys_link(char *oldname, char *newname)
 
 int sys_unlink(char *filename)
 {
-    inode_t *dir = named(filename, &next);   // 获取附件父目录的inode
+    inode_t *dir = named(filename, &next);   // 获取文件父目录的inode
     char *name = next;   // 获取文件名
     dentry_t *entry;
     buf = find_entry(&dir, name, &next, &entry);  // 查找目录项
@@ -170,7 +170,7 @@ int sys_unlink(char *filename)
     ret = 0;
 }
 ```
-为了节省篇幅，这两个函数省略了对异常情况的判断，只保留了核心逻辑。
+为了节省篇幅，这两个函数省略了对异常情况的判断，只保留了核心逻辑。这里对比看到硬链接和创建目录的区别，创建目录是添加目录项后，申请了一个新的inode指向这个目录。但是硬链接添加目录项后，将旧的inode直接指向了这个目录项。
 
 
 ## 三、打开inode

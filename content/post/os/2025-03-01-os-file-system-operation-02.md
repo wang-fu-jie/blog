@@ -107,10 +107,10 @@ static buffer_t *add_entry(inode_t *dir, const char *name, dentry_t **result)  /
     };
 }
 ```
-通过以上三个操作目录的函数就可以进行目录项的查找和创建了，通过add_entry不仅可以创建目录，还可以创建硬链接。只需要把新创建的目录项的nr设置为何原来的nr相等即可，这样就指向了同一个inode。
+通过以上三个操作目录的函数就可以进行目录项的查找和创建了，match_name用于判断路径名 name 的起始部分是否与目录项名 entry_name 完全匹配，如果匹配，还会把 name 剩下未匹配的部分（即下一段路径）通过 next 返回。 这里的目录项名称必须是一个单独目录项，不能传入一个路径。 通过add_entry不仅可以创建目录，还可以创建硬链接。只需要把新创建的目录项的nr设置为何原来的nr相等即可，这样就指向了同一个inode。
 
 ## 二、文件系统namei
-文件系统的namei设置两个功能，分别是获取 pathname 对应的父目录 inode 和  获取 pathname 对应的 inode。 代码实现如下：
+文件系统的namei涉及两个功能，分别是获取 pathname 对应的父目录 inode 和  获取 pathname 对应的 inode。 代码实现如下：
 ```cpp
 inode_t *named(char *pathname, char **next)  // 获取 pathname 对应的父目录 inode
 {
