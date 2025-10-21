@@ -17,7 +17,7 @@ categories:  [ "操作系统" ]
 Bochs是纯软件模拟的 x86 虚拟机，主要用于操作系统开发、教学和研究，高度可调试（支持单步执行、内存检查等），缺点是运行速度较慢。qemu是动态二进制翻译的快速模拟器，支持硬件加速，支持多种架构，但是调试能力不如Bochs。我们在开发操作系统过程中会结合这两种软件的优势进行调试测试。
 
 ## 二、Ubuntu 配置 bochs
-笔者这里选择Ubuntu系统，当然也可以选择其他系统，如centos, redhat、mac等，因为centos开源版本已经不再维护，所以我们优先选择Ubuntu。也可以使用ubuntu的桌面版容器：
+笔者这里选择Ubuntu系统，当然也可以选择其他系统，如centos, redhat、mac等，因为centos开源版本已经不再维护，所以我们优先选择Ubuntu。可以安装虚拟机，或者使用ubuntu的桌面版容器。不过建议优先使用虚拟机，因为容器环境不完整，后续开发过程中会有很多坑。
 ```shell
 docker run -d --privileged --name ubuntu   --shm-size=512m   -p 6901:6901   -e VNC_PW=123456   -u root  --restart always   colinchang/ubuntu-desktop
 #  容器初始化

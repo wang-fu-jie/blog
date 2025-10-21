@@ -259,3 +259,16 @@ int inode_write(inode_t *inode, char *buf, u32 len, off_t offset)  // 从 inode 
 ```
 截断inode文件的代码这里不再展示，逻辑就是找到inode截断后，逐级释放直接块和间接块。这里测试这些功能时，路径可以使用 .. 和 . 两个特殊目录项。这里有些读者可能比较好奇，我们的系统中并未实现这两个特殊的目录项。这是因为在测试时目录是在makefike中通过已有操作系统的mkdir命令创建的，会自动创建这两个目录项。
 
+
+## 四、补充说明：
+这一节在创建目录时调试不通，原因是permission鉴权失败，根目录的权限默认是755， 在鉴权时
+```
+if (task->uid == inode->desc->uid)   // 未走这个分支，因为inode->desc->uid是0， task->uid是100
+mode >>= 6;
+else if (task->gid == inode->desc->gid)  // 走了这个分支
+mode >>= 3;
+
+if ((mode & mask & 0b111) == mask)
+return true;
+```
+因此判断没有组权限，直接返回失败了。 这里原因是目前文件系统的初始化是依赖开发机上的命令，格式化后主盘根目录的uid和gid都是0， 即root用户，因此没走uid分支。如果想调试通过，需要使用非root用户，并且这个普通用户的uid必须是1000，因为我们的操作系统中写死了普通用户的uid是1000。
