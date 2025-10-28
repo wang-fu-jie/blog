@@ -17,28 +17,18 @@ categories:  [ "操作系统" ]
 Bochs是纯软件模拟的 x86 虚拟机，主要用于操作系统开发、教学和研究，高度可调试（支持单步执行、内存检查等），缺点是运行速度较慢。qemu是动态二进制翻译的快速模拟器，支持硬件加速，支持多种架构，但是调试能力不如Bochs。我们在开发操作系统过程中会结合这两种软件的优势进行调试测试。
 
 ## 二、Ubuntu 配置 bochs
-笔者这里选择Ubuntu系统，当然也可以选择其他系统，如centos, redhat、mac等，因为centos开源版本已经不再维护，所以我们优先选择Ubuntu。可以安装虚拟机，或者使用ubuntu的桌面版容器。不过建议优先使用虚拟机，因为容器环境不完整，后续开发过程中会有很多坑。
+笔者这里选择Ubuntu系统，当然也可以选择其他系统，如centos, redhat、mac等，因为centos开源版本已经不再维护，所以我们优先选择Ubuntu。可以安装虚拟机，或者使用ubuntu的桌面版容器。容器总是比较方便，但是容器不是完整的系统，开发过程会受到诸多限制。这里笔者推荐直接使用虚拟机。
 ```shell
-docker run -d --privileged --name ubuntu   --shm-size=512m   -p 6901:6901   -e VNC_PW=123456   -u root  --restart always   colinchang/ubuntu-desktop
-#  容器初始化
-ln -s /usr/bin/python3 /usr/bin/python
-apt update
-apt install sudo nasm gdb udev util-linux
-mount -t devtmpfs devtmpfs /dev
-mount -t devpts devpts /dev/pts
-/lib/systemd/systemd-udevd --daemon
-sudo mknod /dev/loop100 b 7 100
-sudo chmod 660 /dev/loop100
-sudo mknod /dev/loop101 b 7 101
-sudo chmod 660 /dev/loop101
+# 如果使用的宿主机也是ubuntu，建议卸载snap，应该它会占用大量本地回环设备。如果是其他linux发行版本，则可以忽略这步
+sudo apt autoremove --purge snapd
+sudo install nasm
+sudo ln -s /usr/bin/python3 /usr/bin/python
 ```
-这里为容器做初始化原因是，因为容器内环境较少，后续开发文件系统会收到诸多限制，这里提前把这个组件进行安装和启动。
 
 ### 2.1、安装bochs
 在Ubuntu系统可以直接使用apt指令安装bochs。
 ```shell
-apt install bochs
-apt install bochs-x
+sudo apt -y install bochs bochs-x
 ```
 其中最重要的是 bochs-x 这个包，包括了 gui 插件。apt安装的bochs还存在一个问题，就是最新的bochs-bios不可用，这个问题好像持续了很久了，也有人给Ubuntu上报过[bug](https://bugs.launchpad.net/ubuntu/+source/bochs/+bug/2019531)，但是一直没有得到修复。这里我们自己来修复这个问题。第一种方式就是使用老版本的bios。在/usr/share/bochs/文件夹下存放了bios文件。
 ```shell
@@ -48,8 +38,8 @@ BIOS-bochs-latest  BIOS-bochs-legacy  BIOS-qemu-latest  keymaps  VGABIOS-lgpl-la
 如上所示BIOS-bochs-latest为最新的bios，BIOS-bochs-legacy为老版本bios，在配置时使用BIOS-bochs-legacy可以正常运行。但是更推荐修复最新的bios。这里需要自行下载bochs的源码包，可以通过[sourceforge下载bochs](https://sourceforge.net/projects/bochs/files/bochs/)或者github下载。
 ```shell
 wget https://github.com/bochs-emu/Bochs/raw/REL_2_7_FINAL/bochs/bios/BIOS-bochs-latest
-mv /usr/share/bochs/BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest-bak
-mv BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest
+sudo mv /usr/share/bochs/BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest-bak
+sudo mv BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest
 ```
 
 ### 2.2、配置bochs
@@ -121,7 +111,7 @@ bochs -q
 ### 3.1、安装bochs-gdb
 1、安装依赖
 ```shell
-apt install -y build-essential gcc-multilib libx11-dev libxrandr-dev libxpm-dev libgtk2.0-dev pkg-config libncurses-dev
+sudo apt install -y build-essential gcc-multilib libx11-dev libxrandr-dev libxpm-dev libgtk2.0-dev pkg-config libncurses-dev
 ```
 2、下载源码并解压
 ```shell
@@ -153,9 +143,9 @@ make -j1
 ```
 4、安装bochs-gdb
 ```shell
-make install
-rm -f /usr/local/bin/bochs-gdb-a20 /usr/local/bin/bximage
-mv /usr/local/bin/bochs /usr/local/bin/bochs-gdb
+sudo make install
+sudo rm -f /usr/local/bin/bochs-gdb-a20 /usr/local/bin/bximage
+sudo mv /usr/local/bin/bochs /usr/local/bin/bochs-gdb
 ```
 
 ### 3.2、配置bochs-gdb
@@ -202,7 +192,7 @@ bochs-gdb -q -f ../bochs/bochsrc.gdb
 ## 四、Ubuntu 配置 qemu
 qemu的安装使用比bochs会简单很多，我们直接使用apt安装即可：
 ```shell
-apt install qemu-system
+sudo apt install qemu-system
 ```
 安装完成后直接启动即可
 ```

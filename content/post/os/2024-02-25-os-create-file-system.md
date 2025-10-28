@@ -123,11 +123,7 @@ void super_init()
     bwrite(buf1);
 }
 ```
-接下来我们来调试一下这段代码，我们这里使用的ubuntu，因此磁盘挂载需要使用loop, 可以根据自身环境修改原始项目挂载的loop设备
-```shell
-sed -i 's/\<loop0p1\>/loop100p1/g; s/\<loop1\>/loop101/g; s/\<loop0\>/loop100/g; s/${USER}/root/g' utils/image.mk
-```
-这里说明一下为什么这么替换，因为笔者使用的是容器版的ubuntu镜像没有${USER}变量，且loop0和loop1设备被占用了。这也是在本系统文章中第一篇配置文件中做容器初始化创建loop100的原因。接下来我们进入调试看一下变量信息：
+接下来我们来调试一下这段代码，结果如下：
 ![图片加载失败](/post_images/os/{{< filename >}}/3-01.png)
 如上为超级块的信息，inode为5056个，也就是最多5056个文件。第一个数据块在163块。inode位图占了一块，块位图占了两块。
 
