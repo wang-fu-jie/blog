@@ -21,7 +21,7 @@ categories:  [ "操作系统" ]
 ## 二、串口编程
 对 UART 的编程实际上是对其内部寄存器执行读写操作。因此可将 UART 看作是一组寄存器集合，包含发送、接收和控制三部分。UART 内部有 10 个寄存器，供 CPU 通过 in/out 指令对其进行访问。我们这里不对串口的寄存器进行过多的介绍，可参考 [串口设备驱动](https://github.com/StevenBaby/onix/blob/9157a4e202f6f274f9a4fb222f551afb5e3ecc2a/docs/09%20%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/111%20%E4%B8%B2%E5%8F%A3%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8.md)
 
-## 2.1、qemu虚拟机配置串口
+### 2.1、qemu虚拟机配置串口
 qemu 虚拟机配置串口 6 的方式如下：
 ```
 QEMU+= -chardev stdio,mux=on,id=com1 # 字符设备 1
