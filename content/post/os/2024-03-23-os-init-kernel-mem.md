@@ -3,7 +3,7 @@ title:       自制操作系统 - init进程与内核内存保护
 subtitle:    "init进程与内核内存保护"
 description: "osh 和 init应该属于用户程序，但是目前我们直接编译进内核了。到目前我们的系统已经可以执行程序了，因此需要将这两个程序独立出来，作为用户程序放到用户空间去执行。并且目前用户进程是可以访问内核内存的，我们需要对内核内存进行保护，不允许用户进程访问。"
 excerpt:     "osh 和 init应该属于用户程序，但是目前我们直接编译进内核了。到目前我们的系统已经可以执行程序了，因此需要将这两个程序独立出来，作为用户程序放到用户空间去执行。并且目前用户进程是可以访问内核内存的，我们需要对内核内存进行保护，不允许用户进程访问。"
-date:        2025-03-23T10:21:37+08:00
+date:        2024-03-23T10:21:37+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/37/91/boys_school_teacher_education_asia_the_board_of_directors_cambodia_kids-783707.jpg!d"
 published:   true
