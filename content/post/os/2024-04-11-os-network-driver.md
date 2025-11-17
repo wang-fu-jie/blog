@@ -63,14 +63,11 @@ typedef struct e1000_t
 
     pci_device_t *device; // PCI 设备
     u32 membase;          // 映射内存基地址
-
     u8 mac[6];   // MAC 地址
     bool link;   // 网络连接状态
     bool eeprom; // 只读存储器可用
-
     rx_desc_t *rx_desc; // 接收描述符
     u16 rx_cur;         // 接收描述符指针
-
     tx_desc_t *tx_desc; // 传输描述符
     u16 tx_cur;         // 传输描述符指针
     task_t *tx_waiter;  // 传输等待进程
@@ -236,4 +233,10 @@ void pbuf_init()  // 初始化数据包缓冲, 即初始化链表
     list_init(&free_buf_list);
 }
 ```
-如此，在网卡驱动的实现中就可以申请数据包缓冲区，这个具体实现我们不做过多分析。
+如此，在网卡驱动的实现中就可以申请数据包缓冲区，这个具体实现我们不做过多分析。又了数据包缓冲后，流程就发生了些变化，接收流程：
+* 从 pbuf_get() 获取一个 pbuf
+* 把 pbuf->payload 的物理地址填入 RX 描述符 (addr)
+* 网卡 DMA 把收到的数据写到 pbuf→payload
+* 网卡写完更新描述符状态
+* CPU 从 pbuf→payload 读数据并传递给协议栈
+* 协议栈处理完后 pbuf_put() 回收

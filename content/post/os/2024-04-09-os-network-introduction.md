@@ -120,4 +120,4 @@ tap%: /sys/class/net/tap%
 ```
 
 ## 四、网络调试工具
-Scapy 7 是一个 Python 程序，可以用于网络包的发送和嗅探。可以很容易的对其编程，以供调试网络之用。Wireshark 是最流行的网络数据包分析工具，可以通过Wireshark 进行抓包。
+Scapy  是一个 Python 程序，可以用于网络包的发送和嗅探。可以很容易的对其编程，以供调试网络之用。Wireshark 是最流行的网络数据包分析工具，可以通过Wireshark 进行抓包。
