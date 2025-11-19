@@ -197,11 +197,9 @@ pbuf_t *pbuf_get()      // 获取空闲缓冲
         u32 page = alloc_kpage(1);   
         pbuf = (pbuf_t *)page;
         list_push(&free_buf_list, &pbuf->node);
-
         page += PAGE_SIZE / 2;   //  一页内存分为两部分，各2048字节，加入到空闲链表
         pbuf = (pbuf_t *)page;
         list_push(&free_buf_list, &pbuf->node);
-
         pbuf_count += 2;
         LOGK("pbuf count %d\n", pbuf_count);
     }
@@ -216,7 +214,6 @@ void pbuf_put(pbuf_t *pbuf)  // 释放缓冲
 {
     
     assert(((u32)pbuf & 0x7ff) == 0);   // 应该对齐到 2K
-
     assert(pbuf->count > 0);
     pbuf->count--;
     if (pbuf->count > 0)
