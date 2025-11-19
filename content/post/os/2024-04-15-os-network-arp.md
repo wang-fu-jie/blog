@@ -1,9 +1,9 @@
 ---
 title:       自制操作系统 - 以太网协议与ARP协议
 subtitle:    "以太网协议与ARP协议"
-description: ""
-excerpt:     ""
-date:        2025-11-15T17:49:03+08:00
+description: "有了虚拟网络设备后，就可以进行以太网协议的实现了。以太网接收到以太网帧后，需要根据以太网帧载体携带内容来判断如何解包，例如如果携带的是ARP协议，就需要进行ARP的请求或回复。本文将同时进行ARP协议的实现。"
+excerpt:     "有了虚拟网络设备后，就可以进行以太网协议的实现了。以太网接收到以太网帧后，需要根据以太网帧载体携带内容来判断如何解包，例如如果携带的是ARP协议，就需要进行ARP的请求或回复。本文将同时进行ARP协议的实现。"
+date:        2024-04-15T17:49:03+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/be/43/kitchen_furniture_interior_cook_house_eat_modern_kitchen-507251.jpg!d"
 published:   true

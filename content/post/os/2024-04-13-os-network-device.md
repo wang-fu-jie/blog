@@ -1,8 +1,8 @@
 ---
 title:       自制操作系统 - 网络协议与虚拟网络设备
 subtitle:    "网络协议与虚拟网络设备"
-description: ""
-excerpt:     ""
+description: "虚拟网络设备指的是 netif_t， 它表示一个网络接口（Network Interface）的抽象结构体，用来表示一个网卡设备，无论是真实的。通过虚拟网络设备，可以实现本地回环地址。"
+excerpt:     "虚拟网络设备指的是 netif_t， 它表示一个网络接口（Network Interface）的抽象结构体，用来表示一个网卡设备，无论是真实的。通过虚拟网络设备，可以实现本地回环地址。"
 date:        2024-04-13T17:41:10+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/3e/86/country_guitar_girl_music_instrument_musical_acoustic_musician-692362.jpg!d"
