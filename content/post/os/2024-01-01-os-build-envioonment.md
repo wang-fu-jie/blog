@@ -19,11 +19,30 @@ Bochs是纯软件模拟的 x86 虚拟机，主要用于操作系统开发、教�
 ## 二、Ubuntu 配置 bochs
 笔者这里选择Ubuntu系统，当然也可以选择其他系统，如centos, redhat、mac等，因为centos开源版本已经不再维护，所以我们优先选择Ubuntu。可以安装虚拟机，或者使用ubuntu的桌面版容器。容器总是比较方便，但是容器不是完整的系统，开发过程会受到诸多限制。这里笔者推荐直接使用虚拟机。
 ```shell
-# 如果使用的宿主机也是ubuntu，建议卸载snap，应该它会占用大量本地回环设备。如果是其他linux发行版本，则可以忽略这步
+# 如果使用的宿主机也是ubuntu，可以做如下一些初始化配置，方便开发使用。如果是其他linux发行版本，则可以根据实际情况调整
+
+# 手动配置IP地址
+IP 192.168.111.11  子网掩码 255.255.255.0  网关 192.168.111.2  DNS 8.8.8.8
+
+# 安装并启动sshd 和 一些依赖包
+sudo apt update && sudo apt install -y openssh-server vim nasm
+systemctl start ssh
+
+# 安装miniconda
+sudo wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+sudo sh Miniconda3-latest-Linux-x86_64.sh
+echo 'export PATH=$PATH:/opt/miniconda3/bin' | sudo tee -a /etc/profile
+conda create -y -n wfj python=3.12
+conda config --set changeps1 false
+echo 'conda activate wfj' >> ~/.bashrc
+
+# 配置sudo免密
+echo "wfj ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/wfj
+
+# 建议卸载snap，它会占用大量本地回环设备。
 sudo apt autoremove --purge snapd
-sudo install nasm
-sudo ln -s /usr/bin/python3 /usr/bin/python
 ```
+我们这里对ubuntu系统做了一系列初始化配置，都是开发过程中需要用到的或者方便调试目的。
 
 ### 2.1、安装bochs
 在Ubuntu系统可以直接使用apt指令安装bochs。
@@ -32,12 +51,12 @@ sudo apt -y install bochs bochs-x
 ```
 其中最重要的是 bochs-x 这个包，包括了 gui 插件。apt安装的bochs还存在一个问题，就是最新的bochs-bios不可用，这个问题好像持续了很久了，也有人给Ubuntu上报过[bug](https://bugs.launchpad.net/ubuntu/+source/bochs/+bug/2019531)，但是一直没有得到修复。这里我们自己来修复这个问题。第一种方式就是使用老版本的bios。在/usr/share/bochs/文件夹下存放了bios文件。
 ```shell
-root@wfj:~# ls /usr/share/bochs/
+ls /usr/share/bochs/
 BIOS-bochs-latest  BIOS-bochs-legacy  BIOS-qemu-latest  keymaps  VGABIOS-lgpl-latest
 ```
 如上所示BIOS-bochs-latest为最新的bios，BIOS-bochs-legacy为老版本bios，在配置时使用BIOS-bochs-legacy可以正常运行。但是更推荐修复最新的bios。这里需要自行下载bochs的源码包，可以通过[sourceforge下载bochs](https://sourceforge.net/projects/bochs/files/bochs/)或者github下载。
 ```shell
-wget https://github.com/bochs-emu/Bochs/raw/REL_2_7_FINAL/bochs/bios/BIOS-bochs-latest
+sudo wget https://github.com/bochs-emu/Bochs/raw/REL_2_7_FINAL/bochs/bios/BIOS-bochs-latest
 sudo mv /usr/share/bochs/BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest-bak
 sudo mv BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-latest
 ```
@@ -115,14 +134,14 @@ sudo apt install -y build-essential gcc-multilib libx11-dev libxrandr-dev libxpm
 ```
 2、下载源码并解压
 ```shell
-wget -O bochs-2.7.tar.gz http://downloads.sourceforge.net/sourceforge/bochs/bochs-2.7.tar.gz
-tar -xvf bochs-2.7.tar.gz
+sudo wget -O bochs-2.7.tar.gz http://downloads.sourceforge.net/sourceforge/bochs/bochs-2.7.tar.gz
+sudo tar -xvf bochs-2.7.tar.gz
 cd bochs-2.7
 ```
 3、编译bochs-gdb
 ```shell
-sed -i 's/2\.6\*|3\.\*)/2.6*|3.*|4.*)/' configure*
-./configure \
+sudo sed -i 's/2\.6\*|3\.\*)/2.6*|3.*|4.*)/' configure*
+sudo ./configure \
     --prefix=/usr/local \
     --without-wx \
     --with-x11 \
@@ -138,8 +157,8 @@ sed -i 's/2\.6\*|3\.\*)/2.6*|3.*|4.*)/' configure*
     --enable-gdb-stub \
     --with-nogui
 
-sed -i 's/^LIBS = /LIBS = -lpthread/g' Makefile
-make -j1
+sudo sed -i 's/^LIBS = /LIBS = -lpthread/g' Makefile
+sudo make -j1
 ```
 4、安装bochs-gdb
 ```shell
