@@ -25,7 +25,7 @@ Bochs是纯软件模拟的 x86 虚拟机，主要用于操作系统开发、教�
 IP 192.168.111.11  子网掩码 255.255.255.0  网关 192.168.111.2  DNS 8.8.8.8
 
 # 安装并启动sshd 和 一些依赖包
-sudo apt update && sudo apt install -y openssh-server vim nasm
+sudo apt update && sudo apt install -y openssh-server vim nasm git
 systemctl start ssh
 
 # 安装miniconda
@@ -41,6 +41,10 @@ echo "wfj ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/wfj
 
 # 建议卸载snap，它会占用大量本地回环设备。
 sudo apt autoremove --purge snapd
+
+# 安装notebook
+pip install notebook
+jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser
 ```
 我们这里对ubuntu系统做了一系列初始化配置，都是开发过程中需要用到的或者方便调试目的。
 

@@ -23,19 +23,19 @@ HTML和CSS都是w3c组织(万维网联盟)定义的语言标准。
 
 ## 二、浏览器内核
 我们写好的HTML & CSS是交给浏览器来执行并渲染的。浏览器内核包含js执行引擎，渲染引擎，网络引擎等等。常见的浏览器和内核有以下几种：
-* Chorm 最开始使用的内核是 WebKit，现在换成了 Blink。Blink是WebKit的一个分支
+* Chrome 最开始使用的内核是 WebKit，现在换成了 Blink。Blink是WebKit的一个分支
 * Safari 使用WebKit， WebKit是谷歌和苹果公司联合开发的
 * Firfox 火狐浏览器使用的内核是 Gecko
 * IE ie浏览器使用的内核是 Trident
 
 ## 三、开发环境
-前端的开发推荐使用vscode和chorm浏览器，当然pycharm专业版也是可以的。使用vscode这里建议安装以下插件：
+前端的开发推荐使用vscode和chrome浏览器，当然pycharm专业版也是可以的。使用vscode这里建议安装以下插件：
 * live server: 启动一个具有实时刷新功能的本地开发服务器，用于静态和动态页面
 * Auto Rename Tag: 自动重命名配对的HTML/XML标签
 * Chinese lorem:  生成中文简体的乱数假文
 
 ## 四、第一个网页
-配置好开发环境就可以写网页的代码了，新建一个文件，后缀为html或htm结尾，输入一个 ! 好，即可自动生成html的框架。如下：
+配置好开发环境就可以写网页的代码了，新建一个文件，后缀为html或htm结尾，输入一个 ! 号，即可自动生成html的框架。如下：
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -59,4 +59,4 @@ HTML和CSS都是w3c组织(万维网联盟)定义的语言标准。
 ```html
 <!--这是一段注释-->
 ```
-当然如果存在多行注释，直接回车换行即可。浏览器会把 <!--  --> 内的所有内容认为是注释。
+当然如果存在多行注释，直接回车换行即可。浏览器会把`<!--  -->`内的所有内容认为是注释。
