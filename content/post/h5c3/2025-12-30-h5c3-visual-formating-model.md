@@ -8,7 +8,7 @@ author:      "王富杰"
 image:       "https://c.pxhere.com/photos/c2/70/dark_dj_turntable_hand_music-1176248.jpg!d"
 published:   true
 tags:
-    - css
+    - CSS
 slug:        "visual-formating-model"
 categories:  [ "H5C3" ]
 ---
