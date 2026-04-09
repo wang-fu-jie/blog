@@ -3,7 +3,7 @@ title:       Redis源码阅读 - 搭建redis调试环境
 subtitle:    "搭建redis调试环境"
 description: "Redis源码阅读从比较早的redis1.0版本开始，低版本代码量少，易于进行打基础。为了一劳永逸，这里使用docker构建redis的调试镜像，并通过vscode远程调试。也可以根据文章中提供的Dockerfile自定义构建镜像进行redis调试。"
 excerpt:     "edis源码阅读从比较早的redis1.0版本开始，低版本代码量少，易于进行打基础。为了一劳永逸，这里使用docker构建redis的调试镜像，并通过vscode远程调试。也可以根据文章中提供的Dockerfile自定义构建镜像进行redis调试。"
-date:        2023-01-01T13:54:06+08:00
+date:        2026-04-11T13:54:06+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/13/9f/hand_color_crayon_art_drawing-180149.jpg!d"
 published:   true
