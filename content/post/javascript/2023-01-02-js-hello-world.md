@@ -3,7 +3,7 @@ title:       JavaScript - js概述与基础语法
 subtitle:    "js概述与基础语法"
 description: "JavaScript是网景公司开发的用于动态网页的脚本语言。随着发现，它不仅可以用于浏览器渲染网页，还可以开发桌面软件和服务端。支持运行在不同的环境，本教程中我们主要是在浏览器环境运行js代码。"
 excerpt:     "JavaScript是网景公司开发的用于动态网页的脚本语言。随着发现，它不仅可以用于浏览器渲染网页，还可以开发桌面软件和服务端。支持运行在不同的环境，本教程中我们主要是在浏览器环境运行js代码。"
-date:        2026-04-10T14:11:43+08:00
+date:        2023-01-02T14:11:43+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/e5/86/laptop_office_home_office_desk_workplace_computer_business_notebook-544885.jpg!d"
 published:   true
