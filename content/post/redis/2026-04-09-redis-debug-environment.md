@@ -202,3 +202,4 @@ focus src 方向键聚焦到代码ß
 ## 四、参考资料
 [细说Redis源码](https://github.com/shencong1992/RedisNotes/blob/main/%E7%BB%86%E8%AF%B4Redis%E6%BA%90%E7%A0%81-%E7%AE%80%E5%8C%96%E7%89%88.pdf)
 [redis源码剖析与实战](https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/Redis%20%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%E4%B8%8E%E5%AE%9E%E6%88%98)
+[redis设计与实现](https://redisbook.readthedocs.io/en/latest/index.html)
