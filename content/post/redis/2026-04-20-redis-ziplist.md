@@ -1,8 +1,8 @@
 ---
 title:       Redis源码阅读 - Redis数据结构压缩链表(ziplist)
 subtitle:    "Redis数据结构压缩链表(ziplist)"
-description: "ziplist 是由一系列特殊编码的内存块构成的列表，可以保存字符数组或整数值。它根据字符长度或者整数大小使用不同的编码类型，用于节约内存空间。添加和删除 ziplist 节点有可能会引起连锁更新。"
-excerpt:     "ziplist 是由一系列特殊编码的内存块构成的列表，可以保存字符数组或整数值。它根据字符长度或者整数大小使用不同的编码类型，用于节约内存空间。添加和删除 ziplist 节点有可能会引起连锁更新。"
+description: "ziplist 是由一系列特殊编码的内存块构成的列表，可以保存字符数组或整数值。它根据字符长度或者整数大小使用不同的编码类型，用于节约内存空间。添加和删除 ziplist 节点有可能会引起连锁更新。ziplist是在最新版本已经废弃的结构，同样废弃的还有zipmap。代码中依然保留是为了加载低版本RDB时的兼容性。"
+excerpt:     "ziplist 是由一系列特殊编码的内存块构成的列表，可以保存字符数组或整数值。它根据字符长度或者整数大小使用不同的编码类型，用于节约内存空间。添加和删除 ziplist 节点有可能会引起连锁更新。ziplist是在最新版本已经废弃的结构，同样废弃的还有zipmap。代码中依然保留是为了加载低版本RDB时的兼容性。"
 date:        2026-04-20T13:50:18+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/34/25/children_fight_river_attack_martial_arts_boxing_cloud_boxer-1271068.jpg!d"
@@ -324,5 +324,21 @@ unsigned char *__ziplistCascadeUpdate(unsigned char *zl, unsigned char *p) {
 </rawhtml>
 
 
-## 五、总结
+## 五、压缩链表总结
 ziplist 是由一系列特殊编码的内存块构成的列表，可以保存字符数组或整数值。它根据字符长度或者整数大小使用不同的编码类型，用于节约内存空间。添加和删除 ziplist 节点有可能会引起连锁更新，添加和删除操作的最坏复杂度为 O(N2)。因此在Redis的较高版本中，这个数据结构已经基本废弃不再使用，但是它在代码中仍然保留了下来，目的是为了维持和低版本的兼容性。
+
+
+## 六、已弃用结构说明
+ziplist在redis7.0被listpack所取代，同样被废弃的数据结构还有zipmap，这个结构在redis2.6之后就废弃了。但是源码依然保留了实现。还是一样仅仅是为了和低版本的RDB文件进行兼容。这也可以从 rdbLoadObject 函数中看的出来。
+```c
+ case RDB_TYPE_HASH_ZIPMAP:
+                if (!zipmapValidateIntegrity(encoded, encoded_len, 1)) {
+                    rdbReportCorruptRDB("Zipmap integrity check failed.");
+                    zfree(encoded);
+                    o->ptr = NULL;
+                    decrRefCount(o);
+                    return NULL;
+                }
+.....
+```
+如上所示，在加载RDB文件时，如果依然有使用了zipmap结构，就会走这个分支校验完整性病解析成字典。
