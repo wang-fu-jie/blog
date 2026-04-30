@@ -3,7 +3,7 @@ title:        JavaScript - 数据类型与变量
 subtitle:    "数据类型与变量"
 description: "js中的数据类型分为两大类，一类是原始类型，属于不可再细分的类型。第二类是引用类型，它可以再细分。一般开发中会使用变量来保存数据，变量需要先定义再赋值。"
 excerpt:     "js中的数据类型分为两大类，一类是原始类型，属于不可再细分的类型。第二类是引用类型，它可以再细分。一般开发中会使用变量来保存数据，变量需要先定义再赋值。"
-date:        2026-04-30T13:57:06+08:00
+date:        2023-01-04T13:57:06+08:00
 author:      "王富杰"
 image:       "https://c.pxhere.com/photos/c5/9b/work_computer_laptop_technology_coding-7742.jpg!d"
 published:   true
