@@ -55,7 +55,7 @@ level 数组中的每一个元素对应了一个 zskiplistLevel 结构体，也�
 <rawhtml>
 <img src="/post_images/redis/{{< filename >}}/2-01.png" alt="图片加载失败" width="800"/>
 </rawhtml>
-我们结合这个图解释一下 span。 span = 从当前节点出发，到 forward 指针所指节点之间，跨过的 level0 节点数量，包括 forward 指向的那个节点。例如33这个节点，在第三层它下一个指针指向尾节点，中间跨了3个节点，因此跨度为3。在第二层，下一个节点指向，中间跨了2个节点，因此跨度为2。
+我们结合这个图解释一下 span。 span = 从当前节点出发，到 forward 指针所指节点之间，跨过的 level0 节点数量，包括 forward 指向的那个节点。例如33这个节点，在第三层它下一个指针指向尾节点，中间跨了3个节点，因此跨度为3。在第二层，下一个节点指向51，中间跨了2个节点，因此跨度为2。
 
 
 ## 三、跳表的基本操作
@@ -70,7 +70,7 @@ zskiplist *zslCreate(void) {
     size_t zsl_size;   // 用于记录实际可使用的内存，申请的内存可能比sizeof(*zsl)略大
     zsl = zmalloc_usable(sizeof(*zsl), &zsl_size);   // 申请内存
     zsl->level = 1;   // 初始化层数为1
-    zsl->length = 0;   // 初始化节点数位0
+    zsl->length = 0;   // 初始化节点数为0
     zsl->alloc_size = zsl_size;
     zsl->header = zslCreateNode(zsl,ZSKIPLIST_MAXLEVEL,0,NULL);   // 创建头结点，头节点默认就有32层，即支持的最大层数
     for (j = 0; j < ZSKIPLIST_MAXLEVEL; j++) {   // 初始化头结点的每层下一节点都是NULL，跨度为0
@@ -95,7 +95,7 @@ zskiplistNode *zslCreateNode(zskiplist *zsl, int level, double score, sds ele) {
     return zn;
 }
 ```
-集合这个函数，我们能看到头结点在创建时，指定了元素为NULL，分数为0。
+结合这个函数，我们能看到头结点在创建时，指定了元素为NULL，分数为0。
 
 
 ### 3.2、插入节点
@@ -122,7 +122,7 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, sds ele) {    // 给跳�
     }
     .....
 ```
-在执行完这段代码后，每一层都找到了：插入位置、前驱节点 update[i]   和 当前排名 rank[i]. 我们结合一个上午中的图来解释，假设要插入一个45。
+在执行完这段代码后，每一层都找到了：插入位置、前驱节点 update[i]   和 当前排名 rank[i]. 我们结合一个上文中的图来解释，假设要插入一个45。
 <rawhtml>
 <img src="/post_images/redis/{{< filename >}}/2-01.png" alt="图片加载失败" width="800"/>
 </rawhtml>
@@ -182,7 +182,7 @@ x = zslCreateNode(zsl,level,score,ele);  // 创建一个新节点，x指向这�
     zsl->length++;  // 跳表的元素总数+1
     return x;     // 返回新插入的节点
 ```
-如上，为跳表插入新节点的整个流程，我们可以看到还是给出复杂难以理解的。针对不同的情况走的代码分支也不完全相同，这里可以根据笔者的图来理解每行代码为什么这么写。
+如上，为跳表插入新节点的整个流程，我们可以看到还是非常复杂难以理解的。针对不同的情况走的代码分支也不完全相同，这里可以根据笔者的图来理解每行代码为什么这么写。
 
 
 ### 3.2、跳表查询

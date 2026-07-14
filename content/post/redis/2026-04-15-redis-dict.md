@@ -68,7 +68,7 @@ typedef struct dictEntryNoValue {     // 没有值，只有key的字典
 在上图的字典示例中， 字典虽然创建了两个哈希表， 但正在使用的只有 0 号哈希表， 这说明字典未进行 rehash 状态。
 
 ### 3.3、哈希算法
-Redis实现的字典是一个通过的数据结构，可以自行指定哈希算法，通过hashtype来定义。同样的字典也有默认的哈希算法。如下所示：
+Redis实现的字典是一个通用的数据结构，可以自行指定哈希算法，通过hashtype来定义。同样的字典也有默认的哈希算法。如下所示：
 ```c
 uint64_t dictGenHashFunction(const void *key, size_t len) {
     return siphash(key,len,dict_hash_function_seed);
@@ -121,7 +121,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)   // 更低级�
     return dictInsertKeyAtLink(d, key, position);  // 在查找到的位置插入key
 }
 ```
-如上，在插入一个键值对时，会先判断key是否存在，如果存在直接返回NULL，如果不存在就在已经找到应该插入的位置进行插入。dictInsertKeyAtLink是真正的插入函数。在这个函数中会首先判断是否正在rehash以及字典是否无value，针对没有value的字典类型是单独的分子，这里我们不做过多解析。接下来我们分别探讨以上三种情况是如何插入键值对的。这三种情况其实是在 dictFindLinkForInsert 中判断的，在确定应该的插入的位置时就需要确认了。实现如下：
+如上，在插入一个键值对时，会先判断key是否存在，如果存在直接返回NULL，如果不存在就在已经找到应该插入的位置进行插入。dictInsertKeyAtLink是真正的插入函数。在这个函数中会首先判断是否正在rehash以及字典是否无value，针对没有value的字典类型是单独的分支，这里我们不做过多解析。接下来我们分别探讨以上三种情况是如何插入键值对的。这三种情况其实是在 dictFindLinkForInsert 中判断的，在确定应该的插入的位置时就需要确认了。实现如下：
 ```c
 dictEntryLink dictFindLinkForInsert(dict *d, const void *key, dictEntry **existing) {    // 查找key应该被插入的位置
     ......

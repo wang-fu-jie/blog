@@ -37,6 +37,7 @@ struct redisObject {
     unsigned expirable : 1;   // 标记对象是否允许设置过期时间。
     unsigned refcount : OBJ_REFCOUNT_BITS;  // 引用计数。
     void *ptr;                // 指向真实数据结构。
+}
 ```
 举个例子，如果一个 redisObject 的 type 属性为 OBJ_STRING ， encoding 属性为 REDIS_ENCODING_RAW ，那么这个对象就是一个 Redis 字符串，它的值保存在SDS结构内，而 ptr 指针就指向这个SDS。
 
